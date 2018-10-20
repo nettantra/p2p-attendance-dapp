@@ -7,8 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "dev": "lite-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preinstall": "npm install -g truffle ganache-cli",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "webpack": "webpack -d --watch",
+    "start:dev": "webpack-dev-server"
   },
   "author": "",
   "license": "ISC",
