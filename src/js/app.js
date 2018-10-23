@@ -2,7 +2,7 @@ App = {
   web3Provider: null,
   contracts: {},
   account: '0x0',
-  hasMarked: false,
+  hasVoted: false,
 
   init: function() {
     return App.initWeb3();
@@ -20,38 +20,19 @@ App = {
       web3 = new Web3(App.web3Provider);
     }
     return App.initContract();
+    console.log(App.web3Provider);
   },
 
   initContract: function() {
-    $.getJSON("Attendance.json", function(attendance) {
+    $.getJSON("Participants.json", function(participant) {
       // Instantiate a new truffle contract from the artifact
-      App.contracts.Attendance = TruffleContract(attendance);
+      App.contracts.Participants = TruffleContract(participant);
       // Connect provider to interact with contract
-      App.contracts.Attendance.setProvider(App.web3Provider);
-
-      App.listenForEvents();
+      App.contracts.Participants.setProvider(App.web3Provider);
 
       return App.render();
     });
   },
-
-  // Listen for events emitted from the contract
-  listenForEvents: function() {
-    App.contracts.Attendance.deployed().then(function(instance) {
-      // Restart Chrome if you are unable to receive this event
-      // This is a known issue with Metamask
-      // https://github.com/MetaMask/metamask-extension/issues/2393
-      instance.markedEvent({}, {
-        fromBlock: 0,
-        toBlock: 'latest'
-      }).watch(function(error, event) {
-        console.log("event triggered", event)
-        // Reload when a new vote is recorded
-        App.render();
-      });
-    });
-  },
-
 
 
   render: function() {
@@ -62,74 +43,52 @@ App = {
     loader.show();
     content.hide();
 
+
     // Load account data
     web3.eth.getCoinbase(function(err, account) {
       if (err === null) {
         App.account = account;
-        $("#accountAddress").html("Your Account: " + account);
+        $("#accountAddress").html("Account: " + account);
       }
     });
 
     // Load contract data
-    App.contracts.Attendance.deployed().then(function(instance) {
+    App.contracts.Participants.deployed().then(function(instance) {
       attendanceInstance = instance;
-      return attendanceInstance.attendeesCount();
-    }).then(function(attendeesCount) {
-      var attendeesResults = $("#attendeesResults");
-      attendeesResults.empty();
+      return attendanceInstance.participantsCount();
+    }).then(function(participantsCount) {
 
-      var attendeesSelect = $('#attendeesSelect');
-      attendeesSelect.empty();
+         $("#attendeesResults").empty();
 
-      for (var i = 1; i <= attendeesCount; i++) {
-        attendanceInstance.attendees(i).then(function(attendee) {
-          var id = attendee[0];
-          var name = attendee[1];
-          var present = attendee[2];
-          var absent = attendee[3];
+        for (var i = 1; i <= participantsCount; i++) {
+
+          attendanceInstance.participants(i).then(function (attendee) {
+                var id = attendee[0];
+                var name = attendee[1];
+                var present = attendee[2];
+                var absent = attendee[3];
+                var dn = attendee[4];
+                var result = 0;
+                // Render attendee Result
+                var attendeeTemplate = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + present + "</td><td>" + absent + "</td><td>" + dn + "</td><td>" + result + "</td><td><button type=\"button\" class=\"btn btn-success\">P</button><button type=\"button\" style='margin-left: 5px;' class=\"btn btn-danger\">A</button><button type=\"button\"  style='margin-left: 5px;' class=\"btn btn-warning\">D/N</button></td></tr>";
+                $("#attendeesResults").append(attendeeTemplate);
+
+            });
+        }
 
 
-          // Render attendee Result
-          var attendeeTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + present + "</td><td>" + absent + "</td></tr>"
-          attendeesResults.append(attendeeTemplate);
-
-          // Render attendee ballot option
-          var attendeeOption = "<option value='" + id + "' >" + name + "</ option>"
-          attendeesSelect.append(attendeeOption);
-        });
-      }
-      return attendanceInstance.employees(App.account);
-    }).then(function(hasMarked) {
+      //return attendanceInstance.voters(App.account);
+    }).then(function(hasVoted) {
       // Do not allow a user to vote
-      if(hasMarked) {
+      if(hasVoted) {
         $('form').hide();
       }
       loader.hide();
       content.show();
     }).catch(function(error) {
-      console.warn(error);
+      console.log(error);
     });
   },
-
-  mark: function(status) {
-    var attendeeId = $('#attendeesSelect').val();
-    App.contracts.Attendance.deployed().then(function(instance) {
-      if(status == "present")
-        return instance.markpresent(attendeeId, { from: App.account })
-      else if(status == "absent")
-        return instance.markabsent(attendeeId, { from: App.account })
-    }).then(function(result) {
-      // Wait for attendance to update
-      $("#content").hide();
-      $("#loader").show();
-    }).catch(function(err) {
-      console.error(err);
-    });
-  }
-
-
-
-
 
 };
 
