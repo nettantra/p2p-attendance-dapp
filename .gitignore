@@ -61,5 +61,5 @@ typings/
 .next
 
 #editorcache file 
-.idea
+.idea/
 .DS_Store
