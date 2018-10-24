@@ -1,8 +1,8 @@
+candidates = [];
 App = {
   web3Provider: null,
   contracts: {},
   account: '0x0',
-  hasVoted: false,
 
   init: function() {
     return App.initWeb3();
@@ -58,11 +58,12 @@ App = {
       return attendanceInstance.participantsCount();
     }).then(function(participantsCount) {
 
-         $("#attendeesResults").empty();
+         // $(".slidesAppend").empty();
 
         for (var i = 1; i <= participantsCount; i++) {
 
           attendanceInstance.participants(i).then(function (attendee) {
+
                 var id = attendee[0];
                 var name = attendee[1];
                 var present = attendee[2];
@@ -70,25 +71,39 @@ App = {
                 var dn = attendee[4];
                 var result = 0;
                 // Render attendee Result
-                var attendeeTemplate = "<tr><td>" + id + "</td><td>" + name + "</td><td>" + present + "</td><td>" + absent + "</td><td>" + dn + "</td><td>" + result + "</td><td><button type=\"button\" class=\"btn btn-success\">P</button><button type=\"button\" style='margin-left: 5px;' class=\"btn btn-danger\">A</button><button type=\"button\"  style='margin-left: 5px;' class=\"btn btn-warning\">D/N</button></td></tr>";
-                $("#attendeesResults").append(attendeeTemplate);
+              var attendeeTemplate = '<div class="mySlides "> <div class="text">Mr. Sammer</div><div class="numbertext">1 / 3</div> <img  style="width: 106%; height: 300px"  src="https://amp.businessinsider.com/images/5ac518b57a74af23008b4642-750-563.jpg"> </div>';
+              // $(".slidesAppend").html(attendeeTemplate);
 
             });
         }
 
-
-      //return attendanceInstance.voters(App.account);
-    }).then(function(hasVoted) {
-      // Do not allow a user to vote
-      if(hasVoted) {
-        $('form').hide();
-      }
-      loader.hide();
-      content.show();
+    }).then(function() {
+      loader.hide(),content.show();
     }).catch(function(error) {
       console.log(error);
     });
   },
+    registerAttendance: function (employeeId=0,attendanceType=0,) {
+        if(!employeeId || !attendanceType)  return false;
+        App.contracts.Participants.deployed().then(function (contractInstacne) {
+
+          /* contractInstacne.attendeeDetailsCount().then(function (c) {
+               registerAttendanceCount = c.c[0];
+          });
+*/
+
+        /*   console.log(registerAttendanceCount);
+          for(var i = 0 ; i < registerAttendanceCount; i++){
+            console.log("me");
+          }*/
+          // console.log(contractInstacne.attendeeDetails(1));
+             contractInstacne.registerAttendance(employeeId,attendanceType,{from : App.account});
+
+        }).catch(function(error) {
+            console.log(error);
+        });
+    }
+
 
 };
 
@@ -96,4 +111,11 @@ $(function() {
   $(window).load(function() {
     App.init();
   });
+
 });
+
+function nextCandidate(){
+    console.log(candidates);
+}
+
+
