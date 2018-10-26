@@ -28,7 +28,7 @@ To start with **‘the verifiers’** are issued with a basic minimum number of 
 
 ### The Components
 
-- **Truffle Smart Contracts** - This is an set of Smart Contracts with exposed APIs to enable the marking attendance and the corresponding user specific dispositions to the Ethereum Network.
+- **Truffle Smart Contracts** - This is a set of Smart Contracts with exposed APIs to enable the marking attendance and the corresponding user specific dispositions to the Ethereum Network.
 - **Mobile App Client** - This is an mobile app client which will be used by the employees to mark the attendance of their peers.
 
 
