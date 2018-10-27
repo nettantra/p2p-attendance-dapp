@@ -1,0 +1,35 @@
+<ion-header no-shadow>
+  <ion-navbar>
+<ion-label text-center="" style="color: #488aff" [innerHTML]="todayDate" >Date: 11/08/2018</ion-label>
+  </ion-navbar>
+</ion-header>
+
+<ion-content lass="card-background-page">
+  <ion-card *ngIf="side_status">
+    <ion-label text-center="" [innerHTML]="attendee_name" ></ion-label>
+    <img [src]="attendee_img" style="height: 260px !important; width: 100%">
+    <ion-row>
+      <ion-col>
+        <button ion-button icon-start clear small>
+          <ion-icon name="thumbs-up" style="color: #7b7171" (click)="markAttendance()"></ion-icon>
+          <div style="color: #7b7171">Present</div>
+        </button>
+      </ion-col>
+      <ion-col>
+        <button ion-button icon-start clear small>
+          <ion-icon name="thumbs-down" style="color: #7b7171"></ion-icon>
+          <div style="color: #7b7171">Absent</div>
+        </button>
+      </ion-col>
+      <ion-col center text-center>
+        <button ion-button icon-start clear small>
+          <ion-icon style="color: #a42cbf" name="arrow-forward"></ion-icon>
+          <div style="color: #a42cbf" (click)="showSlideSkip()">Next</div>
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+
+
+
+</ion-content>
