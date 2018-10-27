@@ -10,26 +10,23 @@
     <img [src]="attendee_img" style="height: 260px !important; width: 100%">
     <ion-row>
       <ion-col>
-        <button ion-button icon-start clear small>
-          <ion-icon name="thumbs-up" style="color: #7b7171" (click)="markAttendance()"></ion-icon>
+        <button ion-button icon-start clear small (click)="markAttendance(1)">
+          <ion-icon name="thumbs-up" style="color: #7b7171" ></ion-icon>
           <div style="color: #7b7171">Present</div>
         </button>
       </ion-col>
       <ion-col>
-        <button ion-button icon-start clear small>
-          <ion-icon name="thumbs-down" style="color: #7b7171"></ion-icon>
+        <button ion-button icon-start clear small (click)="markAttendance(2)" >
+          <ion-icon name="thumbs-down" style="color: #7b7171"   ></ion-icon>
           <div style="color: #7b7171">Absent</div>
         </button>
       </ion-col>
       <ion-col center text-center>
-        <button ion-button icon-start clear small>
+        <button ion-button icon-start clear small (click)="showSlideSkip()">
           <ion-icon style="color: #a42cbf" name="arrow-forward"></ion-icon>
-          <div style="color: #a42cbf" (click)="showSlideSkip()">Next</div>
+          <div style="color: #a42cbf" >Next</div>
         </button>
       </ion-col>
     </ion-row>
   </ion-card>
-
-
-
 </ion-content>
