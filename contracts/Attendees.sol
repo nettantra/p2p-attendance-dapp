@@ -9,8 +9,8 @@ contract Attendees {
         string name;
         string img_url;
     }
-
     address owner;
+
     //mapping of structure for storing the attendees
     mapping( uint => Attendees) public attendees;
     uint public attendeesCount;
@@ -23,7 +23,7 @@ contract Attendees {
         addAttendee("Smruti","https://qph.fs.quoracdn.net/main-thumb-346046018-200-bybjsssbfqgxvocvdtdggibtjeejnmsk.jpeg",0x9D5AeBBaf8026021ad33A27748ae7d5E94C7E891);
     }
 
-    // modifier to add the attendee by owner only 
+    // modifier to add the attendee by owner only
     modifier onlyOwner{
         require(msg.sender == owner);
         _;
@@ -34,5 +34,6 @@ contract Attendees {
         attendeesCount++;
         attendees[attendeesCount] = Attendees(attendeesCount,public_key,name,img_url);
     }
+
 
 }
