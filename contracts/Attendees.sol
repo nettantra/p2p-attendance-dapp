@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 contract Attendees {
-    // instantiation  of structure
+    // instantiation of structure
     struct Attendees {
         uint uid;
         address public_key;
