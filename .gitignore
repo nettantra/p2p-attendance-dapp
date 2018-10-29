@@ -64,5 +64,9 @@ typings/
 .idea/
 .DS_Store
 
-#remove package-lock
+#remove from ionic app 
 .ionic-app/package-lock.json
+.ionic-app/node_modules/
+.ionic-app/www/
+.ionic-app/platforms/
+.ionic-app/plugins/
