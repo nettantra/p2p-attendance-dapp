@@ -1,7 +1,10 @@
 pragma solidity ^0.4.24;
 
-contract EvaluateAttendance {
+import "./MarkAttendance.sol";
 
+contract EvaluateAttendance  {
+
+     MarkAttendance m;
     // instantiation  of structure
     struct EvaluatedAttendee {
         address attendee_address;
@@ -14,11 +17,20 @@ contract EvaluateAttendance {
     mapping(uint => EvaluatedAttendee) public evaluated_attendees;
     uint public evaluateCount;
 
+
     // constructor
-    constructor() public {}
+    constructor() public {
+    }
+
+    // evaluate attendance result on the basic of attendee and date
+    function evaluation() constant public returns (uint) {
+        return m.attendeeDetailsCount();
+    }
+
+
 
     // add evaluated attendees to evaluated_attendees mapping
-    function addAttendee(address attendee_address,uint opinion,string date_of_attendance) public {
+    function addEvaluatedAttendee(address attendee_address,uint opinion,string date_of_attendance) public {
         evaluateCount++;
         evaluated_attendees[evaluateCount] = EvaluatedAttendee(attendee_address,opinion, now, date_of_attendance);
     }
