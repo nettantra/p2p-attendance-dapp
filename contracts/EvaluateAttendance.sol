@@ -1,26 +1,26 @@
 pragma solidity ^0.4.24;
 
-
 contract EvaluateAttendance {
+
     // instantiation  of structure
-    struct EvalutedAttendee {
+    struct EvaluatedAttendee {
         address attendee_address;
         uint opinion;
         uint256 date_evaluated;
         string date_of_attendance;
     }
 
-    //mapping of structure  for storing the participants
-    mapping(uint => EvalutedAttendee) public evaluted_attendees;
-    uint public evaluteCount;
+    //mapping of structure for storing the evaluated_attendees
+    mapping(uint => EvaluatedAttendee) public evaluated_attendees;
+    uint public evaluateCount;
 
     // constructor
     constructor() public {}
 
-    // add a new participant to Participant structure
+    // add evaluated attendees to evaluated_attendees mapping
     function addAttendee(address attendee_address,uint opinion,string date_of_attendance) public {
-        evaluteCount++;
-        evaluted_attendees[evaluteCount] = EvalutedAttendee(attendee_address,opinion, now, date_of_attendance);
+        evaluateCount++;
+        evaluated_attendees[evaluateCount] = EvaluatedAttendee(attendee_address,opinion, now, date_of_attendance);
     }
 
 }
