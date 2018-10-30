@@ -16,12 +16,14 @@ contract Attendees {
     mapping(uint => AttendeesStructure) public attendees;
     uint public attendeesCount;
 
+    //1540857600
     // constructor to save some attendees
     constructor() public {
         owner = msg.sender;
         addAttendee("Biswaindu", "https://amp.businessinsider.com/images/5ac518b57a74af23008b4642-750-563.jpg", 0x3b220bdD0D1C1b37AC6d434f027CC88a5b51B878);
         addAttendee("Sibabrat", "https://www.evolllution.com/wp-content/uploads/2015/03/sized_Big-Name-Universities-Must-Respond-to-Student-Expectations.jpg", 0x0c8615A3d73b0AA9342A06A3d66C5f723D63E2Ed);
-        addAttendee("Smruti", "https://qph.fs.quoracdn.net/main-thumb-346046018-200-bybjsssbfqgxvocvdtdggibtjeejnmsk.jpeg", 0x9D5AeBBaf8026021ad33A27748ae7d5E94C7E891);
+        addAttendee("Smruti", "https://m.blog.hu/do/dolgozzmagadon/image/student2.jpg", 0x9D5AeBBaf8026021ad33A27748ae7d5E94C7E891);
+        addAttendee("Prabina", "https://www.ldatschool.ca/wp-content/uploads/2014/02/A-teachers-journey-with-student-self-advocacy.jpg", 0xab70787066CDeEb7f402b7364fac3a8BD7851c8D);
     }
 
     // modifier to add the attendee by owner only
@@ -66,9 +68,9 @@ contract MarkAttendance is Attendees {
     function getMarkedAttendeeDetailsCount() view public returns (uint) {return attendeeDetailsCount;}
 
     //getter function for attendee details
-    function getAttendeeDetails(uint _count, uint date) view public returns (address, uint, uint) {
+    function getAttendeeDetails(uint _count, uint256 date) view public returns (address, uint, uint256) {
         address attendee_add = attendees[_count].public_key;
-        uint  doa = attendeeDetails[_count].date_of_attendance;
+        uint256 doa = attendeeDetails[_count].date_of_attendance;
         uint present = 0;
         uint absent = 0;
         uint opinion = 3;
@@ -110,9 +112,9 @@ contract EvaluateAttendance is MarkAttendance {
     }
 
     // evaluate attendance result on the basic of attendee and date
-    function evaluation() public {
+    function evaluation(uint256 date) public {
         for (uint i = 1; i <= attendeesCount; i++) {
-            (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, 1440806400);
+            (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, date);
             evaluated_attendees[evaluateCount] = EvaluatedAttendee(r_attendee_address, r_opinion, r_date_of_attendance, now);
             evaluateCount++;
         }
