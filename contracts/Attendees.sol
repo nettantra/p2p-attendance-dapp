@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 contract Attendees {
 
     // instantiation of structure
-    struct Attendees {
+    struct AttendeesStructure {
         uint uid;
         address public_key;
         string name;
@@ -13,7 +13,7 @@ contract Attendees {
     address owner;
 
     //mapping of structure for storing the attendees
-    mapping(uint => Attendees) public attendees;
+    mapping(uint => AttendeesStructure) public attendees;
     uint public attendeesCount;
 
     // constructor to save some attendees
@@ -33,7 +33,7 @@ contract Attendees {
     // add attendee to attendees mapping
     function addAttendee(string name, string img_url, address public_key) onlyOwner public {
         attendeesCount++;
-        attendees[attendeesCount] = Attendees(attendeesCount, public_key, name, img_url);
+        attendees[attendeesCount] = AttendeesStructure(attendeesCount, public_key, name, img_url);
     }
 }
 
@@ -45,7 +45,7 @@ contract MarkAttendance is Attendees {
         address attendee;
         uint attendance_opinion;
         uint256 timestamp;
-        string date_of_attendance;
+        uint256 date_of_attendance;
     }
 
     //mapping of structure  for storing the attendeeDetails
@@ -58,7 +58,7 @@ contract MarkAttendance is Attendees {
     }
 
     // save mark attendance details to attendeeDetails mapping
-    function markAttendance(address attendee, uint attendance_opinion, string date) public {
+    function markAttendance(address attendee, uint attendance_opinion, uint date) public {
         attendeeDetailsCount ++;
         attendeeDetails[attendeeDetailsCount] = AttendeeDetails(msg.sender, attendee, attendance_opinion, now, date);
     }
@@ -66,14 +66,14 @@ contract MarkAttendance is Attendees {
     function getMarkedAttendeeDetailsCount() view public returns (uint) {return attendeeDetailsCount;}
 
     //getter function for attendee details
-    function getAttendeeDetails(uint _count, string date) view public returns (address, uint, string) {
+    function getAttendeeDetails(uint _count, uint date) view public returns (address, uint, uint) {
         address attendee_add = attendees[_count].public_key;
-        string storage doa = attendeeDetails[_count].date_of_attendance;
+        uint  doa = attendeeDetails[_count].date_of_attendance;
         uint present = 0;
         uint absent = 0;
         uint opinion = 3;
         for (uint i = 0; i <= attendeeDetailsCount; i++) {
-            if (attendee_add == attendeeDetails[i].attendee && keccak256(doa) == keccak256(attendeeDetails[i].date_of_attendance))
+            if (attendee_add == attendeeDetails[i].attendee && doa == attendeeDetails[i].date_of_attendance)
             {
                 if (attendeeDetails[i].attendance_opinion == 1) present++;
                 else if (attendeeDetails[i].attendance_opinion == 2) absent++;
@@ -93,7 +93,7 @@ contract EvaluateAttendance is MarkAttendance {
     struct EvaluatedAttendee {
         address attendee_address;
         uint opinion;
-        string date_of_attendance;
+        uint256 date_of_attendance;
         uint256 date_evaluated;
     }
 
@@ -103,7 +103,7 @@ contract EvaluateAttendance is MarkAttendance {
 
     uint public r_opinion = 3;
     address public r_attendee_address;
-    string public r_date_of_attendance = "";
+    uint256 public r_date_of_attendance;
 
     // constructor
     constructor() public {
@@ -112,7 +112,7 @@ contract EvaluateAttendance is MarkAttendance {
     // evaluate attendance result on the basic of attendee and date
     function evaluation() public {
         for (uint i = 1; i <= attendeesCount; i++) {
-            (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, "29/11/2018");
+            (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, 1440806400);
             evaluated_attendees[evaluateCount] = EvaluatedAttendee(r_attendee_address, r_opinion, r_date_of_attendance, now);
             evaluateCount++;
         }

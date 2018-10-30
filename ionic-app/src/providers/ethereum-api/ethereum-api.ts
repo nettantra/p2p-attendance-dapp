@@ -14,25 +14,17 @@ export class EthereumApiProvider {
   private web3Provider: null;
   candidates: any;
   attendeesAbi: any;
-  AttendeeContract:any;
-  side_status:boolean = true;
+  AttendeeContract: any;
+  side_status: boolean = true;
+
   constructor(public http: HttpClient) {
     this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
     window.web3 = new Web3(this.web3Provider);
-     this.AttendeeContract = TruffleContract(attendee_abi);
+    this.AttendeeContract = TruffleContract(attendee_abi);
     this.AttendeeContract.setProvider(this.web3Provider);
 
   }
 
-
-  /*
-    var count =  instance.attendeesCount();
-    console.log(count);
-    for(let i = 1; i<=2;i++) {
-    instance.attendees(i).then(function (attendee) {
-      console.log(attendee);
-    });
-  */
 
 // get account info
   async getAccountInfo() {
@@ -52,16 +44,16 @@ export class EthereumApiProvider {
   }
 
 
-   showAttendee(page_num = 1) {
+  showAttendee(page_num = 1) {
     let electionInstance;
     let attendee_r;
-    return  new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       this.AttendeeContract.deployed().then(function (instance) {
         electionInstance = instance;
         return instance.attendeesCount();
       }).then(function (attendeesCount) {
-        electionInstance.attendees(page_num).then(function(attendee) {
-          attendee_r =  attendee;
+        electionInstance.attendees(page_num).then(function (attendee) {
+          attendee_r = attendee;
           console.log(attendee_r);
         });
         return resolve(attendee_r);
@@ -69,7 +61,6 @@ export class EthereumApiProvider {
         console.log(error);
       });
     });
-
 
 
     // await this.AttendeeContract.deployed().then(function (instance) {
@@ -83,7 +74,7 @@ export class EthereumApiProvider {
     //   console.log(error);
     // });
 
-   // console.log(this.candidates);
+    // console.log(this.candidates);
     //return this.candidates;
 
     /* let that = this;

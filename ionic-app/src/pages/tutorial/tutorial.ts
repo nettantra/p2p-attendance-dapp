@@ -1,21 +1,12 @@
 import {Component} from '@angular/core';
-import {IonicPage, MenuController, NavController, Platform} from 'ionic-angular';
+import {IonicPage, MenuController, NavController} from 'ionic-angular';
 import * as Web3 from 'web3';
 import * as TruffleContract from 'truffle-contract';
-
 
 declare let require: any;
 declare let window: any;
 let attendee_abi = require('../../../../build/contracts/Attendees.json');
 let mark_attendee_abi = require('../../../../build/contracts/MarkAttendance.json');
-
-let code = attendee_abi.toString();
-
-export interface Slide {
-  title: string;
-  description: string;
-  image: string;
-}
 
 @IonicPage()
 @Component({
@@ -35,7 +26,8 @@ export class TutorialPage {
   slide_num: number = 1;
   attendeesCount: number = 1;
   lastPageStatus: boolean = false;
-  fromAccount:string = "";
+  fromAccount: string = "";
+  rand: number;
 
   constructor(public navCtrl: NavController, public menu: MenuController) {
     this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
@@ -44,13 +36,15 @@ export class TutorialPage {
     this.AttendeeContract.setProvider(this.web3Provider);
     this.MarkAttendeeContract = TruffleContract(mark_attendee_abi);
     this.MarkAttendeeContract.setProvider(this.web3Provider);
-    this.attendeeLoad(1);
+
     this.accountInfo();
+    this.attendeeLoad(1);
     this.findDate();
+
   }
 
   //get account info
-  accountInfo(){
+  accountInfo() {
     this.getBlockInfo()
       .then(value => {
         // @ts-ignore
@@ -59,6 +53,7 @@ export class TutorialPage {
 
     });
   }
+
   // get block info
   async getBlockInfo() {
     return await new Promise((resolve, reject) => {
@@ -75,9 +70,10 @@ export class TutorialPage {
       });
     });
   }
+
   // attendeeLoad
-  attendeeLoad(page_num = 1) {
-    this.talkToContratc(page_num)
+  attendeeLoad(slide_num = 1) {
+    this.talkToContract(slide_num)
       .then(value => {
         // @ts-ignore
         let slidedata = value.attendee_details;
@@ -94,15 +90,14 @@ export class TutorialPage {
   }
 
   // asynch event to talk to blocks
-  async talkToContratc(page_num) {
+  async talkToContract(slide_num) {
     let electionInstance;
     return await new Promise((resolve, reject) => {
       this.AttendeeContract.deployed().then(function (instance) {
         electionInstance = instance;
         return instance.attendeesCount();
       }).then(function (attendeesCount) {
-        electionInstance.attendees(page_num).then(function (attendee) {
-          console.log(attendeesCount);
+        electionInstance.attendees(slide_num).then(function (attendee) {
           return resolve({attendee_details: attendee, total_attendee_count: attendeesCount});
         });
       }).catch(function (error) {
@@ -124,20 +119,44 @@ export class TutorialPage {
   }
 
   changeDate() {
+
+   /* let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth()+1; //January is 0!
+    let yyyy = today.getFullYear();
+
+    if(dd<10) {
+      // @ts-ignore
+      dd = '0'+dd;
+    }
+
+    if(mm<10) {
+      // @ts-ignore
+      mm = '0'+mm;
+    }
+
+    // @ts-ignore
+    today = yyyy + '-' + mm + '-' + dd;
+    let date_ = new Date(today);
+    let seconds = date_.getTime() / 1000;
+*/
+
     let date = new Date();
     let formattedDate = ('0' + date.getDate()).slice(-2);
     let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
-    let formattedYear = date.getFullYear().toString().substr(2, 2);
-    let dateString = formattedDate + '/' + formattedMonth + '/' + formattedYear;
-    return dateString;
+    let formattedYear = date.getFullYear().toString();
+    let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
+    let date_format = new Date(dateString);
+    let seconds = date_format.getTime() / 1000
+    return seconds;
+
   }
 
   // mark attendance and save opinion
   markAttendance(opinion = 0) {
     let that = this;
     if (!opinion) return false;
-    var date = this.changeDate();
-
+    let date = this.changeDate();
     console.log(this.web3Provider);
     this.MarkAttendeeContract.deployed().then(function (markAttendanceInstacne) {
       markAttendanceInstacne.markAttendance(that.attendeeAddress, opinion, date, {from: that.fromAccount},
@@ -147,4 +166,12 @@ export class TutorialPage {
     });
   }
 
+  async createRandomNumber() {
+    let number_array = [];
+    for (let i = 2; i <= this.attendeesCount; i++) {
+      number_array.push(this.attendeesCount);
+    }
+    let rand = await number_array[Math.floor(Math.random() * number_array.length)];
+    this.rand = rand;
+  }
 }
