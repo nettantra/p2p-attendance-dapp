@@ -1,12 +1,14 @@
-import {Component} from '@angular/core';
-import {IonicPage, MenuController, NavController} from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
+import {Nav,IonicPage, MenuController, NavController, ToastController, LoadingController} from 'ionic-angular';
 import * as Web3 from 'web3';
 import * as TruffleContract from 'truffle-contract';
+import {Storage} from '@ionic/storage';
 
 declare let require: any;
 declare let window: any;
 let attendee_abi = require('../../../../build/contracts/Attendees.json');
 let mark_attendee_abi = require('../../../../build/contracts/MarkAttendance.json');
+let evaluation_attendee_abi = require('../../../../build/contracts/EvaluateAttendance.json');
 
 @IonicPage()
 @Component({
@@ -14,10 +16,15 @@ let mark_attendee_abi = require('../../../../build/contracts/MarkAttendance.json
   templateUrl: 'tutorial.html'
 })
 export class TutorialPage {
+
+  @ViewChild(Nav) nav: Nav;
+
   private web3Provider: null;
   AttendeeContract: any;
   MarkAttendeeContract: any;
-  side_status: boolean = true;
+  EvaluationAttendeeContract: any;
+  side_status: boolean = false;
+  spinner: boolean = true;
   attendee_name: string = "";
   attendee_img: string = "";
   attendeeId: string = "";
@@ -28,18 +35,42 @@ export class TutorialPage {
   lastPageStatus: boolean = false;
   fromAccount: string = "";
   rand: number;
+  icon_status_p: boolean = false;
+  icon_status_a: boolean = false;
+  storageForValidation: any = [];
+  no_access: boolean = false;
+  refreshBtn: boolean = true;
+  refreshLoader: boolean = false;
 
-  constructor(public navCtrl: NavController, public menu: MenuController) {
+  constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController,
+              public loadingCtrl: LoadingController, public storage: Storage) {
     this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
     window.web3 = new Web3(this.web3Provider);
     this.AttendeeContract = TruffleContract(attendee_abi);
     this.AttendeeContract.setProvider(this.web3Provider);
     this.MarkAttendeeContract = TruffleContract(mark_attendee_abi);
     this.MarkAttendeeContract.setProvider(this.web3Provider);
+    this.EvaluationAttendeeContract = TruffleContract(evaluation_attendee_abi);
+    this.EvaluationAttendeeContract.setProvider(this.web3Provider);
 
+
+    // this.storage.remove('attendance_date');
     this.accountInfo();
     this.attendeeLoad(1);
     this.findDate();
+    setTimeout(() => {
+      this.spinner = false;
+      this.storage.get('attendance_date').then((prev_date) => {
+        if (prev_date != this.changeDate()) {
+          this.side_status = true;
+          this.storageForValidation = [];
+          this.storage.set('attendee_address', this.storageForValidation);
+        } else {
+          this.no_access = true;
+        }
+      });
+
+    }, 2000);
 
   }
 
@@ -89,11 +120,11 @@ export class TutorialPage {
     });
   }
 
-  // asynch event to talk to blocks
+  // async event to talk to blocks
   async talkToContract(slide_num) {
     let electionInstance;
     return await new Promise((resolve, reject) => {
-      this.AttendeeContract.deployed().then(function (instance) {
+      this.EvaluationAttendeeContract.deployed().then(function (instance) {
         electionInstance = instance;
         return instance.attendeesCount();
       }).then(function (attendeesCount) {
@@ -108,8 +139,29 @@ export class TutorialPage {
 
   // load next attendee randomly
   showSlideSkip() {
+
+    this.icon_status_a = false;
+    this.icon_status_p = false;
+
     if (this.slide_num - this.attendeesCount == 1) this.lastPageStatus = true;
-    if (!this.lastPageStatus) this.attendeeLoad(this.slide_num);
+    if (!this.lastPageStatus) {
+      this.spinner = true;
+      this.side_status = false;
+      this.attendeeLoad(this.slide_num);
+    } else {
+      let toast = this.toastCtrl.create({
+        message: 'No more attendees',
+        duration: 2000,
+        position: 'bottom'
+      });
+      toast.present();
+    }
+
+    setTimeout(() => {
+      this.spinner = false;
+      this.side_status = true;
+    }, 1000);
+
   }
 
   // find date
@@ -120,26 +172,26 @@ export class TutorialPage {
 
   changeDate() {
 
-   /* let today = new Date();
-    let dd = today.getDate();
-    let mm = today.getMonth()+1; //January is 0!
-    let yyyy = today.getFullYear();
+    /* let today = new Date();
+     let dd = today.getDate();
+     let mm = today.getMonth()+1; //January is 0!
+     let yyyy = today.getFullYear();
 
-    if(dd<10) {
-      // @ts-ignore
-      dd = '0'+dd;
-    }
+     if(dd<10) {
+       // @ts-ignore
+       dd = '0'+dd;
+     }
 
-    if(mm<10) {
-      // @ts-ignore
-      mm = '0'+mm;
-    }
+     if(mm<10) {
+       // @ts-ignore
+       mm = '0'+mm;
+     }
 
-    // @ts-ignore
-    today = yyyy + '-' + mm + '-' + dd;
-    let date_ = new Date(today);
-    let seconds = date_.getTime() / 1000;
-*/
+     // @ts-ignore
+     today = yyyy + '-' + mm + '-' + dd;
+     let date_ = new Date(today);
+     let seconds = date_.getTime() / 1000;
+ */
 
     let date = new Date();
     let formattedDate = ('0' + date.getDate()).slice(-2);
@@ -154,16 +206,70 @@ export class TutorialPage {
 
   // mark attendance and save opinion
   markAttendance(opinion = 0) {
+
+    this.storage.set('attendance_date', this.changeDate());
     let that = this;
     if (!opinion) return false;
     let date = this.changeDate();
-    console.log(this.web3Provider);
-    this.MarkAttendeeContract.deployed().then(function (markAttendanceInstacne) {
-      markAttendanceInstacne.markAttendance(that.attendeeAddress, opinion, date, {from: that.fromAccount},
-        {from: that.fromAccount, gas: 4700000});
-    }).catch(function (error) {
-      console.log(error);
+    let loading = this.loadingCtrl.create({
+      content: '',
     });
+    loading.present();
+
+    setTimeout(() => {
+      this.storage.get('attendee_address').then((attendees) => {
+        console.log(attendees);
+        let status = attendees.includes(that.attendeeAddress);
+        console.log(status);
+        if (!status) {
+          if (opinion == 1) {
+            let toast = this.toastCtrl.create({
+              message: 'You have registered present ',
+              duration: 2000,
+              position: 'bottom'
+            });
+            toast.present();
+            this.icon_status_p = true;
+          }
+          else {
+            let toast = this.toastCtrl.create({
+              message: 'You have registered absent',
+              duration: 2000,
+              position: 'bottom'
+            });
+            toast.present();
+            this.icon_status_a = true;
+          }
+          console.log(this.web3Provider, that.attendeeAddress, opinion, that.fromAccount);
+          this.storageForValidation.push(that.attendeeAddress);
+          this.storage.set('attendee_address', this.storageForValidation);
+          this.EvaluationAttendeeContract.deployed().then(function (markAttendanceInstacne) {
+            markAttendanceInstacne.markAttendance(that.attendeeAddress, opinion, date, {
+              from: that.fromAccount,
+              gas: 4700000
+            });
+          }).catch(function (error) {
+            console.log(error);
+          });
+        } else {
+          let toast = this.toastCtrl.create({message: 'You can not do this', duration: 2000, position: 'bottom'});
+          toast.present();
+        }
+      });
+      loading.dismiss();
+    }, 1000);
+  }
+
+
+  refreshAttendee() {
+    this.refreshBtn = false;
+    this.refreshLoader = true;
+    setTimeout(() => {
+      this.refreshBtn = true;
+      this.refreshLoader = false;
+      this.navCtrl.setRoot(this.navCtrl.getActive().component);
+    }, 1000);
+
   }
 
   async createRandomNumber() {

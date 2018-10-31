@@ -16,7 +16,7 @@ contract Attendees {
     mapping(uint => AttendeesStructure) public attendees;
     uint public attendeesCount;
 
-    //1540857600
+    //1540944000
     // constructor to save some attendees
     constructor() public {
         owner = msg.sender;
@@ -60,7 +60,7 @@ contract MarkAttendance is Attendees {
     }
 
     // save mark attendance details to attendeeDetails mapping
-    function markAttendance(address attendee, uint attendance_opinion, uint date) public {
+    function markAttendance(address attendee, uint attendance_opinion, uint256 date) public {
         attendeeDetailsCount ++;
         attendeeDetails[attendeeDetailsCount] = AttendeeDetails(msg.sender, attendee, attendance_opinion, now, date);
     }
@@ -75,15 +75,25 @@ contract MarkAttendance is Attendees {
         uint absent = 0;
         uint opinion = 3;
         for (uint i = 0; i <= attendeeDetailsCount; i++) {
-            if (attendee_add == attendeeDetails[i].attendee && doa == attendeeDetails[i].date_of_attendance)
+            if (attendee_add == attendeeDetails[i].attendee)
             {
                 if (attendeeDetails[i].attendance_opinion == 1) present++;
                 else if (attendeeDetails[i].attendance_opinion == 2) absent++;
             }
         }
-        if (present < absent) opinion = 2;
-        else if (present > absent || (present == absent && (present != 0 || absent != 0))) opinion = 1;
+
+        if (present != 0 || absent != 0) {
+            if (present < absent) opinion = 2;
+            if (present > absent) opinion = 1;
+            if (present == absent) opinion = 1;
+        }
+
         return (attendee_add, opinion, date);
+    }
+
+    // check if marked attendance already
+    function validateAttender() internal returns (bool){
+
     }
 
 
@@ -113,6 +123,10 @@ contract EvaluateAttendance is MarkAttendance {
 
     // evaluate attendance result on the basic of attendee and date
     function evaluation(uint256 date) public {
+        evaluateCount = 1;
+        r_opinion;
+        r_date_of_attendance;
+        r_attendee_address;
         for (uint i = 1; i <= attendeesCount; i++) {
             (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, date);
             evaluated_attendees[evaluateCount] = EvaluatedAttendee(r_attendee_address, r_opinion, r_date_of_attendance, now);
