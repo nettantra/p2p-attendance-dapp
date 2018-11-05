@@ -1,6 +1,6 @@
 <ion-header no-shadow>
   <ion-navbar>
-    <ion-label text-center="" style="color: #488aff" [innerHTML]="todayDate">Date: 11/08/2018</ion-label>
+    <ion-label text-center="" style="color: #fff" [innerHTML]="todayDate">Date: 11/08/2018</ion-label>
 
     <ion-buttons ion-button icon-only right *ngIf="refreshLoader">
       <ion-spinner color="white" name="ios-small"></ion-spinner>
@@ -18,25 +18,25 @@
 <ion-content lass="card-background-page">
 
   <ion-card *ngIf="side_status">
-    <ion-label text-center="" [innerHTML]="attendee_name"></ion-label>
+    <ion-label text-center="" style="color: #fff" [innerHTML]="attendee_name"></ion-label>
     <img [src]="attendee_img" style="height: 260px !important; width: 100%">
     <ion-row>
       <ion-col>
         <button ion-button icon-start clear small (click)="markAttendance(1)">
           <ion-icon name="thumbs-up" class="action_button" [class.icon_status_p]="icon_status_p"></ion-icon>
-          <div style="color: #7b7171">Present</div>
+          <div style="color: #fff">Present</div>
         </button>
       </ion-col>
       <ion-col>
         <button ion-button icon-start clear small (click)="markAttendance(2)">
           <ion-icon name="thumbs-down" class="action_button" [class.icon_status_a]="icon_status_a"></ion-icon>
-          <div style="color: #7b7171">Absent</div>
+          <div style="color: #fff">Absent</div>
         </button>
       </ion-col>
       <ion-col center text-center>
         <button ion-button icon-start clear small (click)="showSlideSkip()">
-          <ion-icon style="color: #a42cbf" name="arrow-forward"></ion-icon>
-          <div style="color: #a42cbf">SKIP</div>
+          <ion-icon style="color: #fff" name="arrow-forward"></ion-icon>
+          <div style="color: #fff" [innerHTML] = "button_name">SKIP</div>
         </button>
       </ion-col>
     </ion-row>

@@ -2,11 +2,11 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import * as Web3 from 'web3';
 import * as TruffleContract from 'truffle-contract';
-
 declare let require: any;
 declare let window: any;
-let attendee_abi = require('../../../../build/contracts/Attendees.json');
-let mark_attendee_abi = require('../../../../build/contracts/MarkAttendance.json');
+let attendee_abi = require('../../../contracts/Attendees.json');
+let mark_attendee_abi = require('../../../contracts/MarkAttendance.json');
+let evaluation_attendee_abi = require('../../../contracts/EvaluateAttendance.json');
 
 
 @Injectable()
@@ -15,19 +15,35 @@ export class EthereumApiProvider {
   candidates: any;
   attendeesAbi: any;
   AttendeeContract: any;
+  MarkAttendeeContract: any;
+  EvaluationAttendeeContract: any;
   side_status: boolean = true;
 
+  // 'http://localhost:7545' //'https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f'
   constructor(public http: HttpClient) {
-    this.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+    this.web3Provider = new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f');
     window.web3 = new Web3(this.web3Provider);
     this.AttendeeContract = TruffleContract(attendee_abi);
     this.AttendeeContract.setProvider(this.web3Provider);
-
+    this.MarkAttendeeContract = TruffleContract(mark_attendee_abi);
+    this.MarkAttendeeContract.setProvider(this.web3Provider);
+    this.EvaluationAttendeeContract = TruffleContract(evaluation_attendee_abi);
+    this.EvaluationAttendeeContract.setProvider(this.web3Provider);
+    console.log(this.EvaluationAttendeeContract);
   }
 
+  accountInfo() {
+    this.getBlockInfo()
+      .then(value => {
+        // @ts-ignore
+        return value.fromAccount;
+      }).catch(function (error) {
 
-// get account info
-  async getAccountInfo() {
+    });
+  }
+
+  // get block info
+  async getBlockInfo() {
     return await new Promise((resolve, reject) => {
       window.web3.eth.getCoinbase(function (err, account) {
         if (err === null) {
@@ -43,54 +59,35 @@ export class EthereumApiProvider {
     });
   }
 
-
-  showAttendee(page_num = 1) {
+  // async event to talk to blocks
+  async talkToContract(slide_num) {
     let electionInstance;
-    let attendee_r;
-    return new Promise((resolve, reject) => {
-      this.AttendeeContract.deployed().then(function (instance) {
+    return await new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then(function (instance) {
         electionInstance = instance;
         return instance.attendeesCount();
       }).then(function (attendeesCount) {
-        electionInstance.attendees(page_num).then(function (attendee) {
-          attendee_r = attendee;
-          console.log(attendee_r);
+        electionInstance.attendees(slide_num).then(function (attendee) {
+          return resolve({attendee_details: attendee, total_attendee_count: attendeesCount});
         });
-        return resolve(attendee_r);
       }).catch(function (error) {
         console.log(error);
       });
     });
-
-
-    // await this.AttendeeContract.deployed().then(function (instance) {
-    //   electionInstance = instance;
-    //   return instance.attendeesCount();
-    // }).then(function (attendeesCount) {
-    //     electionInstance.attendees(page_num).then(function(attendee) {
-    //        attendee_r =  attendee;
-    //     });
-    // }).catch(function (error) {
-    //   console.log(error);
-    // });
-
-    // console.log(this.candidates);
-    //return this.candidates;
-
-    /* let that = this;
-     return new Promise((resolve, reject) => {
-       let Attendee = TruffleContract(attendee_abi);
-       Attendee.setProvider(that.web3Provider);
-       Attendee.deployed().then(function (instance) {
-         return instance.attendeesCount();
-       }).then(function (attendeesCount) {
-         return attendeesCount;
-       }).catch(function (error) {
-         console.log(error);
-         return reject("Error in transferEther service call");
-       });
-     });*/
   }
 
+  // async event to authenticate users
+  async authenticationUser(user_address) {
+    return await new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then(function (instance) {
+        return instance.authenticateUser(user_address);
+      }).then(function (status) {
+        return resolve({result: status});
+      })
+        .catch(function (error) {
+          console.log(error);
+        });
+    });
+  }
 
 }

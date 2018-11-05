@@ -21,7 +21,8 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   pages: any[] = [
-    { title: 'Mark Attendance', component: 'TutorialPage' }
+    { title: 'Mark Attendance', component: 'AttendancePage' },
+    { title: 'Welcome Page', component: 'WelcomePage' }
   ]
 
   constructor(platform: Platform,private statusBar: StatusBar, private splashScreen: SplashScreen) {
