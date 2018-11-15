@@ -1,4 +1,8 @@
+
+
+
 page-welcome {
+
   /* #login-card {
      width: 55% !important;
      height: 55% !important;
@@ -12,7 +16,8 @@ page-welcome {
   }
   .panel {
     font-family: 'Source Sans Pro';
-    font-size: 1.36em;
+    //font-size: 1.36em;
+    font-size: 1.1em;
     position: absolute;
     z-index: 10;
     width: 190px;
@@ -41,9 +46,11 @@ page-welcome {
     text-align: center;
     font-size: .75em;
   }
+
+ 
   .panel h2 {
     font-weight: 400;
-    font-size: .8em;
+    font-size: 0.8em;
     margin-bottom: 16px;
     text-align: center;
     line-height: 1.3em;
@@ -68,5 +75,14 @@ page-welcome {
     margin-top: 10px;
     color: #222;
     border-radius: 4px;
+  }
+
+  /* for alert custom css */
+
+
+  .alertCustomCss{
+    .alert-ios .alert-wrapper{
+      background: red !important;
+    }
   }
 }

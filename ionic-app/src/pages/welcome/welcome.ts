@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {IonicPage, MenuController, NavController, AlertController, ToastController} from 'ionic-angular';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
+import {Storage} from "@ionic/storage";
 
 
 /**
@@ -24,8 +25,10 @@ export class WelcomePage {
 
 
   constructor(public navCtrl: NavController, public menu: MenuController,
-              private alertCtrl: AlertController, public toast: ToastController, private eat: EthereumApiProvider) {
+              private alertCtrl: AlertController, public toastCtrl: ToastController, private eap: EthereumApiProvider,
+              public storage: Storage) {
 
+    storage.remove('auth_key');
     this.menu.swipeEnable(false);
 
     this.myStyle = {
@@ -81,6 +84,8 @@ export class WelcomePage {
   signInToBlock() {
     let alert = this.alertCtrl.create({
       title: 'Login',
+      enableBackdropDismiss:false,
+      cssClass: 'alertCustomCss',
       inputs: [
         {
           name: 'user_address',
@@ -108,14 +113,19 @@ export class WelcomePage {
   }
 
   autnetications(user_add) {
-    this.eat.authenticationUser(user_add).then((data) => {
-      if (data) {
+    this.eap.authenticationUser(user_add).then((data) => {
+      // @ts-ignore
+      if (data.status == 200) {
+        this.storage.set('auth_key', user_add);
         this.navCtrl.setRoot('AttendancePage');
-      } else{
-        let toast = this.toast.create({message: 'Not found try again', duration: 2000, position: 'bottom'});toast.present();
+      }else {
+        // @ts-ignore
+        let toast_error = this.toastCtrl.create({message: data.msg, duration: 2000, position: 'bottom'});
+        toast_error.present();
       }
-        }).catch(function (error) {
-      console.log(error);
+    }).catch(function (error) {
+      let toast_error = this.toastCtrl.create({message: "Please try again after some time .", duration: 2000, position: 'bottom'});
+      toast_error.present();
     });
   }
 

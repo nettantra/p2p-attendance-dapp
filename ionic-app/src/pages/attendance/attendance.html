@@ -17,8 +17,12 @@
 
 <ion-content lass="card-background-page">
 
-  <ion-card *ngIf="side_status">
-    <ion-label text-center="" style="color: #fff" [innerHTML]="attendee_name"></ion-label>
+  <ion-card *ngIf="side_status" >
+    <ion-item>
+      <ion-label text-left style="color: #fff" [innerHTML]="attendee_name"></ion-label>
+      <ion-label text-right style="color: #fff" [innerHTML]="page_count_show"></ion-label>
+    </ion-item>
+
     <img [src]="attendee_img" style="height: 260px !important; width: 100%">
     <ion-row>
       <ion-col>
@@ -43,8 +47,8 @@
   </ion-card>
 
 
-  <ion-card *ngIf="no_access">
-    <ion-label text-center=""  style="padding: 10px;">No access for today, please try tomorrow. </ion-label>
+  <ion-card *ngIf="no_access" >
+    <ion-label text-center=""  style="padding: 10px; color: #fff">No access for today, please try tomorrow. </ion-label>
     <img src ="https://img.freepik.com/free-vector/thank-you-background_23-2147646155.jpg" style="height: 260px !important; width: 100%">
   </ion-card>
 

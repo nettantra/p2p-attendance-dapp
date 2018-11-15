@@ -2,47 +2,52 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import * as Web3 from 'web3';
 import * as TruffleContract from 'truffle-contract';
+import {Storage} from "@ionic/storage";
+
 declare let require: any;
 declare let window: any;
-let attendee_abi = require('../../../contracts/Attendees.json');
-let mark_attendee_abi = require('../../../contracts/MarkAttendance.json');
+
+//local ganache
+// let evaluation_attendee_abi = require('../../../../build/contracts/EvaluateAttendance.json');
+// let provider_url = 'http://localhost:7545';
+
+// test node ropsten/rinkeby
 let evaluation_attendee_abi = require('../../../contracts/EvaluateAttendance.json');
+let provider_url = 'https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f';
 
 
 @Injectable()
 export class EthereumApiProvider {
   private web3Provider: null;
-  candidates: any;
-  attendeesAbi: any;
-  AttendeeContract: any;
-  MarkAttendeeContract: any;
   EvaluationAttendeeContract: any;
-  side_status: boolean = true;
+  attendanceMarker: string = "";
 
-  // 'http://localhost:7545' //'https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f'
-  constructor(public http: HttpClient) {
-    this.web3Provider = new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f');
+  constructor(public http: HttpClient, public storage: Storage) {
+    this.web3Provider = new Web3.providers.HttpProvider(provider_url);
     window.web3 = new Web3(this.web3Provider);
-    this.AttendeeContract = TruffleContract(attendee_abi);
-    this.AttendeeContract.setProvider(this.web3Provider);
-    this.MarkAttendeeContract = TruffleContract(mark_attendee_abi);
-    this.MarkAttendeeContract.setProvider(this.web3Provider);
     this.EvaluationAttendeeContract = TruffleContract(evaluation_attendee_abi);
     this.EvaluationAttendeeContract.setProvider(this.web3Provider);
-    console.log(this.EvaluationAttendeeContract);
+    this.storage.get('auth_key').then((key) => {
+      if (typeof key != "undefined") this.attendanceMarker = key;
+    });
+
   }
 
-  accountInfo() {
-    this.getBlockInfo()
-      .then(value => {
-        // @ts-ignore
-        return value.fromAccount;
+  // async event to get total number of attendee
+  async getTotalNumberAttendee() {
+    return await new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then(function (instance) {
+        return instance.attendeesCount()
+          .then((count) => {
+            return resolve({result: count.toString()});
+          })
       }).catch(function (error) {
-
+        console.log(error);
+      });
     });
   }
 
-  // get block info
+  // async get block info
   async getBlockInfo() {
     return await new Promise((resolve, reject) => {
       window.web3.eth.getCoinbase(function (err, account) {
@@ -60,16 +65,38 @@ export class EthereumApiProvider {
   }
 
   // async event to talk to blocks
-  async talkToContract(slide_num) {
+  async talkToContract(slide_num, random_num = 1, max_attendee = 5) {
+    // console.log(random_num);
     let electionInstance;
+    if (slide_num <= max_attendee) {
+      return await new Promise((resolve, reject) => {
+        this.EvaluationAttendeeContract.deployed().then(function (instance) {
+          electionInstance = instance;
+          return instance.attendeesCount();
+        }).then(function (attendeesCount) {
+          electionInstance.attendees(random_num).then(function (attendee) {
+            return resolve({attendee_details: attendee, total_attendee_count: attendeesCount, status: 200});
+          });
+        }).catch(function (error) {
+          console.log(error);
+        });
+      });
+    } else {
+      return await new Promise((resolve, reject) => {
+        return resolve({attendee_details: '', total_attendee_count: '', status: 400});
+      });
+    }
+  }
+
+  // for mark attendance
+  async markAttendance(attendeeAddress, opinion, date, fromAccount) {
     return await new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
-        electionInstance = instance;
-        return instance.attendeesCount();
-      }).then(function (attendeesCount) {
-        electionInstance.attendees(slide_num).then(function (attendee) {
-          return resolve({attendee_details: attendee, total_attendee_count: attendeesCount});
+        instance.markAttendance(attendeeAddress, opinion, date, {
+          from: fromAccount,
+          gas: 4700000
         });
+        return resolve({result: true});
       }).catch(function (error) {
         console.log(error);
       });
@@ -80,12 +107,14 @@ export class EthereumApiProvider {
   async authenticationUser(user_address) {
     return await new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
+        console.log(instance);
         return instance.authenticateUser(user_address);
       }).then(function (status) {
-        return resolve({result: status});
+        if (status) return resolve({result: status, status: 200, msg: "Successfully SignedIn"});
+        else return resolve({result: status, status: 201, msg: "Not found try again"});
       })
         .catch(function (error) {
-          console.log(error);
+          return resolve({result: status, status: 400, msg: "Not a valid address"});
         });
     });
   }

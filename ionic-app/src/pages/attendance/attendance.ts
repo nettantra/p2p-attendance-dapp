@@ -1,14 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
-import {Nav, IonicPage, MenuController, NavController, ToastController, LoadingController} from 'ionic-angular';
-import * as Web3 from 'web3';
-import * as TruffleContract from 'truffle-contract';
+import {Nav, IonicPage, MenuController, NavController, ToastController} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
-
-declare let require: any;
-declare let window: any;
-let attendee_abi = require('../../../contracts/Attendees.json');
-let mark_attendee_abi = require('../../../contracts/MarkAttendance.json');
-let evaluation_attendee_abi = require('../../../contracts/EvaluateAttendance.json');
+import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 
 @IonicPage()
 @Component({
@@ -16,13 +9,7 @@ let evaluation_attendee_abi = require('../../../contracts/EvaluateAttendance.jso
   templateUrl: 'attendance.html'
 })
 export class AttendancePage {
-
   @ViewChild(Nav) nav: Nav;
-
-  private web3Provider: null;
-  AttendeeContract: any;
-  MarkAttendeeContract: any;
-  EvaluationAttendeeContract: any;
   side_status: boolean = false;
   spinner: boolean = true;
   attendee_name: string = "";
@@ -42,20 +29,36 @@ export class AttendancePage {
   refreshBtn: boolean = true;
   refreshLoader: boolean = false;
   button_name: string = "SKIP";
-  constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController,
-              public loadingCtrl: LoadingController, public storage: Storage) {
-    this.menu.swipeEnable(false);
-    this.web3Provider = new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f');
-    window.web3 = new Web3(this.web3Provider);
-    this.AttendeeContract = TruffleContract(attendee_abi);
-    this.AttendeeContract.setProvider(this.web3Provider);
-    this.MarkAttendeeContract = TruffleContract(mark_attendee_abi);
-    this.MarkAttendeeContract.setProvider(this.web3Provider);
-    this.EvaluationAttendeeContract = TruffleContract(evaluation_attendee_abi);
-    this.EvaluationAttendeeContract.setProvider(this.web3Provider);
-    this.storage.remove('attendance_date');
+  attendanceMarker: string = "";
+
+  // for page count
+  page_count: number = 0;
+  page_count_show: string = "(1/5)";
+  max_page_count: number = 5;
+
+  // for random number
+  possible_attendee_num: any = [];
+  total_attendee_count: number = 0;
+  random_num: 0;
+  max_attendee: number = 5;
+
+  constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController, public storage: Storage, private eap: EthereumApiProvider) {
+    // this.storage.remove('attendance_date');
+    this.storage.get('auth_key').then((key) => {
+      if (!key) {
+        storage.remove('auth_key');
+        navCtrl.setRoot('WelcomePage');
+      }
+      this.attendanceMarker = key;
+    });
     this.accountInfo();
-    this.attendeeLoad(1);
+    this.eap.getTotalNumberAttendee().then((total_attendee) => {
+      // @ts-ignore
+      this.total_attendee_count = total_attendee.result;
+      for (let i = 1; i <= this.total_attendee_count; i++) {
+        this.possible_attendee_num.push(i);
+      }
+    });
     this.findDate();
     setTimeout(() => {
       this.spinner = false;
@@ -68,14 +71,14 @@ export class AttendancePage {
           this.no_access = true;
         }
       });
-
+      this.attendeeLoad();
     }, 2000);
-
+    this.menu.swipeEnable(false);
   }
 
   //get account info
   accountInfo() {
-    this.getBlockInfo()
+    this.eap.getBlockInfo()
       .then(value => {
         // @ts-ignore
         this.fromAccount = value.fromAccount;
@@ -84,56 +87,39 @@ export class AttendancePage {
     });
   }
 
-  // get block info
-  async getBlockInfo() {
-    return await new Promise((resolve, reject) => {
-      window.web3.eth.getCoinbase(function (err, account) {
-        if (err === null) {
-          window.web3.eth.getBalance(account, function (err, balance) {
-            if (err === null) {
-              return resolve({fromAccount: account, balance: (window.web3.fromWei(balance, "ether")).toNumber()});
-            } else {
-              return reject({fromAccount: "error", balance: 0});
-            }
-          });
-        }
-      });
-    });
-  }
-
   // attendeeLoad
   attendeeLoad(slide_num = 1) {
-    this.talkToContract(slide_num)
+    console.log(this.random_num);
+    this.random_num = this.possible_attendee_num[Math.floor(Math.random() * this.possible_attendee_num.length)];
+    let index = this.possible_attendee_num.indexOf(this.random_num);
+    if (index !== -1) this.possible_attendee_num.splice(index, 1);
+    this.eap.talkToContract(slide_num, this.random_num,this.max_attendee)
       .then(value => {
         // @ts-ignore
-        let slidedata = value.attendee_details;
-        // @ts-ignore
-        this.attendeesCount = value.total_attendee_count;
-        this.attendeeId = (slidedata[0]);
-        this.attendeeAddress = (slidedata[1]);
-        this.attendee_name = (slidedata[2]);
-        this.attendee_img = (slidedata[3]);
-        this.slide_num++;
-      }).catch(function (error) {
+        if (value.status == 200) {
+          // @ts-ignore
+          let slidedata = value.attendee_details;
+          // @ts-ignore
+          this.attendeesCount = value.total_attendee_count;
+          this.slide_num++;
+          if (slidedata[1].toLowerCase() != this.attendanceMarker.toLowerCase()) {
+            this.page_count++;
+            this.page_count_show = "(" + this.page_count + "/" + this.max_page_count + ")"
+            this.attendeeId = (slidedata[0]);
+            this.attendeeAddress = (slidedata[1]);
+            this.attendee_name = (slidedata[2]);
+            this.attendee_img = (slidedata[3]);
+          } else {
+            this.max_attendee = 6;
+            let index = this.possible_attendee_num.indexOf(this.slide_num);
+            if (index !== -1) this.possible_attendee_num.splice(index, 1);
+            this.attendeeLoad(this.slide_num);
+          }
+        } else {
+          this.refreshAttendee();
+        }
 
-    });
-  }
-
-  // async event to talk to blocks
-  async talkToContract(slide_num) {
-    let electionInstance;
-    return await new Promise((resolve, reject) => {
-      this.EvaluationAttendeeContract.deployed().then(function (instance) {
-        electionInstance = instance;
-        console.log(instance);
-        return instance.attendeesCount();
-      }).then(function (attendeesCount) {
-        electionInstance.attendees(slide_num).then(function (attendee) {
-          return resolve({attendee_details: attendee, total_attendee_count: attendeesCount});
-        });
       }).catch(function (error) {
-        console.log(error);
-      });
     });
   }
 
@@ -159,24 +145,7 @@ export class AttendancePage {
       this.spinner = false;
       this.button_name = "SKIP";
       this.side_status = true;
-    }, 1000);
-  }
-
-  // find date
-  findDate() {
-    let today = new Date();
-    this.todayDate = "Date :- " + today.toDateString();
-  }
-
-  changeDate() {
-    let date = new Date();
-    let formattedDate = ('0' + date.getDate()).slice(-2);
-    let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
-    let formattedYear = date.getFullYear().toString();
-    let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
-    let date_format = new Date(dateString);
-    let seconds = date_format.getTime() / 1000
-    return seconds;
+    }, 3000);
   }
 
   // mark attendance and save opinion
@@ -188,9 +157,9 @@ export class AttendancePage {
     let date = this.changeDate();
 
     this.storage.get('attendee_address').then((attendees) => {
-      console.log(attendees);
+      // console.log(attendees);
       let status = attendees.includes(that.attendeeAddress);
-      console.log(status);
+      // console.log(status);
       if (!status) {
         if (opinion == 1) {
           let toast = this.toastCtrl.create({
@@ -210,17 +179,10 @@ export class AttendancePage {
           toast.present();
           this.icon_status_a = true;
         }
-        console.log(this.web3Provider, that.attendeeAddress, opinion, that.fromAccount);
+        // console.log(this.web3Provider, that.attendeeAddress, opinion, that.fromAccount);
         this.storageForValidation.push(that.attendeeAddress);
         this.storage.set('attendee_address', this.storageForValidation);
-        this.EvaluationAttendeeContract.deployed().then(function (markAttendanceInstacne) {
-          markAttendanceInstacne.markAttendance(that.attendeeAddress, opinion, date, {
-            from: that.fromAccount,
-            gas: 4700000
-          });
-        }).catch(function (error) {
-          console.log(error);
-        });
+        this.eap.markAttendance(that.attendeeAddress, opinion, date, this.attendanceMarker);
         setTimeout(() => this.showSlideSkip(), 2000);
       } else {
         let toast = this.toastCtrl.create({message: 'You can not do this', duration: 1200, position: 'bottom'});
@@ -231,6 +193,7 @@ export class AttendancePage {
 
   }
 
+  // refresh attendee
   refreshAttendee() {
     this.refreshBtn = false;
     this.refreshLoader = true;
@@ -242,13 +205,22 @@ export class AttendancePage {
 
   }
 
-  async createRandomNumber() {
-    let number_array = [];
-    for (let i = 2; i <= this.attendeesCount; i++) {
-      number_array.push(this.attendeesCount);
-    }
-    let rand = await number_array[Math.floor(Math.random() * number_array.length)];
-    this.rand = rand;
+  // find date
+  findDate() {
+    let today = new Date();
+    this.todayDate = "Date :- " + today.toDateString();
+  }
+
+  // change date
+  changeDate() {
+    let date = new Date();
+    let formattedDate = ('0' + date.getDate()).slice(-2);
+    let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
+    let formattedYear = date.getFullYear().toString();
+    let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
+    let date_format = new Date(dateString);
+    let seconds = date_format.getTime() / 1000
+    return seconds;
   }
 
 }
