@@ -1,0 +1,16 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{employee[2]}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <div class="item-profile" text-center #profilePic [style.background-image]="'url(' + employee[4] + ')'">  </div>
+  <div class="item-detail" padding>
+    <h2>{{employee[2]}}</h2>
+    <p>{{employee[3]}}</p>
+  </div>
+</ion-content>

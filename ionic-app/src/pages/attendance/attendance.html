@@ -1,15 +1,15 @@
 <ion-header no-shadow>
   <ion-navbar>
-    <ion-label text-center="" style="color: #fff" [innerHTML]="todayDate">Date: 11/08/2018</ion-label>
+    <ion-label text-center="" style="color: #000" [innerHTML]="todayDate">Date: 11/08/2018</ion-label>
 
     <ion-buttons ion-button icon-only right *ngIf="refreshLoader">
-      <ion-spinner color="white" name="ios-small"></ion-spinner>
+      <ion-spinner style="color: #000" name="ios-small"></ion-spinner>
     </ion-buttons>
 
 
     <ion-buttons right end  *ngIf="refreshBtn">
       <button ion-button icon-only class="refresh_status" (click)="refreshAttendee()">
-        <ion-icon color="white" name="refresh" class="refresh_status_icon"></ion-icon>
+        <ion-icon style="color: #000" name="refresh" class="refresh_status_icon"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>
@@ -19,8 +19,8 @@
 
   <ion-card *ngIf="side_status" >
     <ion-item>
-      <ion-label text-left style="color: #fff" [innerHTML]="attendee_name"></ion-label>
-      <ion-label text-right style="color: #fff" [innerHTML]="page_count_show"></ion-label>
+      <ion-label text-left style="color: #000" [innerHTML]="attendee_name"></ion-label>
+      <ion-label text-right style="color: #000" [innerHTML]="page_count_show"></ion-label>
     </ion-item>
 
     <img [src]="attendee_img" style="height: 260px !important; width: 100%">
@@ -28,19 +28,19 @@
       <ion-col>
         <button ion-button icon-start clear small (click)="markAttendance(1)">
           <ion-icon name="thumbs-up" class="action_button" [class.icon_status_p]="icon_status_p"></ion-icon>
-          <div style="color: #fff">Present</div>
+          <div style="color: #000">Present</div>
         </button>
       </ion-col>
       <ion-col>
         <button ion-button icon-start clear small (click)="markAttendance(2)">
           <ion-icon name="thumbs-down" class="action_button" [class.icon_status_a]="icon_status_a"></ion-icon>
-          <div style="color: #fff">Absent</div>
+          <div style="color: #000">Absent</div>
         </button>
       </ion-col>
       <ion-col center text-center>
         <button ion-button icon-start clear small (click)="showSlideSkip()">
-          <ion-icon style="color: #fff" name="arrow-forward"></ion-icon>
-          <div style="color: #fff" [innerHTML] = "button_name">SKIP</div>
+          <ion-icon style="color: #000" name="arrow-forward"></ion-icon>
+          <div style="color: #000" [innerHTML] = "button_name">SKIP</div>
         </button>
       </ion-col>
     </ion-row>
@@ -48,7 +48,7 @@
 
 
   <ion-card *ngIf="no_access" >
-    <ion-label text-center=""  style="padding: 10px; color: #fff">No access for today, please try tomorrow. </ion-label>
+    <ion-label text-center=""  style="padding: 10px; color: #000">No access for today, please try tomorrow. </ion-label>
     <img src ="https://img.freepik.com/free-vector/thank-you-background_23-2147646155.jpg" style="height: 260px !important; width: 100%">
   </ion-card>
 

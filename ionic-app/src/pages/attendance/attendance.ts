@@ -13,6 +13,7 @@ export class AttendancePage {
   side_status: boolean = false;
   spinner: boolean = true;
   attendee_name: string = "";
+  attendee_about: string = "";
   attendee_img: string = "";
   attendeeId: string = "";
   attendeeAddress: string = "";
@@ -43,7 +44,6 @@ export class AttendancePage {
   max_attendee: number = 5;
 
   constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController, public storage: Storage, private eap: EthereumApiProvider) {
-    // this.storage.remove('attendance_date');
     this.storage.get('auth_key').then((key) => {
       if (!key) {
         storage.remove('auth_key');
@@ -108,7 +108,8 @@ export class AttendancePage {
             this.attendeeId = (slidedata[0]);
             this.attendeeAddress = (slidedata[1]);
             this.attendee_name = (slidedata[2]);
-            this.attendee_img = (slidedata[3]);
+            this.attendee_about = (slidedata[3]);
+            this.attendee_img = (slidedata[4]);
           } else {
             this.max_attendee = 6;
             let index = this.possible_attendee_num.indexOf(this.slide_num);
@@ -208,7 +209,7 @@ export class AttendancePage {
   // find date
   findDate() {
     let today = new Date();
-    this.todayDate = "Date :- " + today.toDateString();
+    this.todayDate = today.toDateString();
   }
 
   // change date

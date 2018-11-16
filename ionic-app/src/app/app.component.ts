@@ -23,7 +23,12 @@ export class MyApp {
 
   pages: any[] = [
     {title: 'Mark Attendance', component: 'AttendancePage'},
-    {title: 'Welcome Page', component: 'WelcomePage'}
+    {title: 'Welcome Page', component: 'WelcomePage'},
+    {title: 'Admin Dashboard', component: 'AdminHomePage'},
+    {title: 'Employee', component: 'EmployeeListPage'},
+    {title: 'Admin Add Employee', component: 'AdminAddEmployeePage'},
+    {title: 'Admin Check Result', component: 'AdminCheckResultPage'},
+    {title: 'About Employee', component: 'EmployeeDetailPage'}
   ]
 
   constructor(platform: Platform, private statusBar: StatusBar, private splashScreen: SplashScreen,
@@ -33,6 +38,12 @@ export class MyApp {
       if (key) this.rootPage = "AttendancePage";
       else this.rootPage = "WelcomePage";
     });
+
+  /*  this.storage.get('user_type').then((type) => {
+      if (type == "admin") this.rootPage = "AdminHomePage";
+      else this.rootPage = "AttendancePage";
+    });
+    */
     platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();

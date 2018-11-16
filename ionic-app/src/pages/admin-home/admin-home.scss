@@ -1,0 +1,39 @@
+page-admin-home {
+
+  .toolbar-background {
+    background: transparent;
+    border-color: transparent;
+  }
+
+
+
+  .scroll-content {
+    background-image: url(https://media-assets-02.thedrum.com/cache/images/thedrum-prod/s3-news-tmp-140656-s3-news-tmp-980-blockchain-2x1-940--2x1--940.png);
+    //background-repeat: no-repeat;
+    //background-position: 70% center;
+  }
+
+  .button_row {
+    left: 0;
+    right: 0;
+    top: 200px;
+    bottom: 0;
+    position: sticky;
+    z-index: 1;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: scroll;
+  }
+  button{
+    height: 3.6rem !important;
+    border: 3px solid #2b8de021 !important;
+    font-size: 1.4rem !important;
+    color: #000 !important;
+    background-color: #ffffff !important;
+    margin: 0.4rem 0.2rem !important;
+    padding: 0 1.1em !important;
+    font-size: 14px!important;
+    padding: 17px 16px !important;
+    border-radius: 8px !important;
+  }
+}

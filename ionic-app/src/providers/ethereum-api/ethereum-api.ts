@@ -6,14 +6,15 @@ import {Storage} from "@ionic/storage";
 
 declare let require: any;
 declare let window: any;
+let employees: any = [];
 
 //local ganache
-// let evaluation_attendee_abi = require('../../../../build/contracts/EvaluateAttendance.json');
-// let provider_url = 'http://localhost:7545';
+let evaluation_attendee_abi = require('../../../../build/contracts/EvaluateAttendance.json');
+let provider_url = 'http://localhost:7545';
 
 // test node ropsten/rinkeby
-let evaluation_attendee_abi = require('../../../contracts/EvaluateAttendance.json');
-let provider_url = 'https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f';
+// let evaluation_attendee_abi = require('../../../contracts/EvaluateAttendance.json');
+// let provider_url = 'https://ropsten.infura.io/v3/fade1c96c8c14e5f8f3131a5343cea1f';
 
 
 @Injectable()
@@ -21,8 +22,8 @@ export class EthereumApiProvider {
   private web3Provider: null;
   EvaluationAttendeeContract: any;
   attendanceMarker: string = "";
-
   constructor(public http: HttpClient, public storage: Storage) {
+
     this.web3Provider = new Web3.providers.HttpProvider(provider_url);
     window.web3 = new Web3(this.web3Provider);
     this.EvaluationAttendeeContract = TruffleContract(evaluation_attendee_abi);
@@ -30,6 +31,24 @@ export class EthereumApiProvider {
     this.storage.get('auth_key').then((key) => {
       if (typeof key != "undefined") this.attendanceMarker = key;
     });
+
+    // all the employee list
+    employees = [];
+    let electionInstance;
+    this.EvaluationAttendeeContract.deployed().then(function (instance) {
+      electionInstance = instance;
+      return electionInstance.attendeesCount();
+    }).then(function (attendeesCount) {
+      for (let i = 1; i <= attendeesCount; i++) {
+        electionInstance.attendees(i).then(function (attendee) {
+          employees.push(attendee)
+        }).catch(function (err) {
+          console.log(err);
+        })
+      }
+    }).catch(function (err) {
+      console.log(err);
+    })
 
   }
 
@@ -107,7 +126,6 @@ export class EthereumApiProvider {
   async authenticationUser(user_address) {
     return await new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
-        console.log(instance);
         return instance.authenticateUser(user_address);
       }).then(function (status) {
         if (status) return resolve({result: status, status: 200, msg: "Successfully SignedIn"});
@@ -118,5 +136,26 @@ export class EthereumApiProvider {
         });
     });
   }
+
+  //async event to get all the employees
+  getAllAttendee(params?: any) {
+    if (!params) {
+      return employees;
+    }
+    // params = "sibabrat";
+    return employees.filter((employee) => {
+      for (let key in params) {
+        console.log(employee,params,key);
+        let field = employee[key];
+        if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+          return employee;
+        } else if (field == params[key]) {
+          return employee;
+        }
+      }
+      return null;
+    });
+  }
+
 
 }
