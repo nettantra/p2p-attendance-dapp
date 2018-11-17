@@ -93,7 +93,7 @@ export class AttendancePage {
     this.random_num = this.possible_attendee_num[Math.floor(Math.random() * this.possible_attendee_num.length)];
     let index = this.possible_attendee_num.indexOf(this.random_num);
     if (index !== -1) this.possible_attendee_num.splice(index, 1);
-    this.eap.talkToContract(slide_num, this.random_num,this.max_attendee)
+    this.eap.talkToContract(slide_num, this.random_num, this.max_attendee)
       .then(value => {
         // @ts-ignore
         if (value.status == 200) {
@@ -224,4 +224,13 @@ export class AttendancePage {
     return seconds;
   }
 
+
+  // for attendee logout
+  logoutUser() {
+    this.storage.remove('auth_key').then(() => {
+      this.navCtrl.setRoot('WelcomePage');
+    }).catch(function (error) {
+      console.log(error);
+    })
+  }
 }

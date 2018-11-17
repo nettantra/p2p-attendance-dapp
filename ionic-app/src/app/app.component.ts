@@ -34,16 +34,17 @@ export class MyApp {
   constructor(platform: Platform, private statusBar: StatusBar, private splashScreen: SplashScreen,
               public storage: Storage) {
 
-    this.storage.get('auth_key').then((key) => {
-      if (key) this.rootPage = "AttendancePage";
-      else this.rootPage = "WelcomePage";
+
+    this.storage.get('user_type').then((type) => {
+      if (type == "admin") this.rootPage = "AdminHomePage";
+      else {
+        this.storage.get('auth_key').then((key) => {
+          if (key) this.rootPage = "AttendancePage";
+          else this.rootPage = "WelcomePage";
+        });
+      }
     });
 
-  /*  this.storage.get('user_type').then((type) => {
-      if (type == "admin") this.rootPage = "AdminHomePage";
-      else this.rootPage = "AttendancePage";
-    });
-    */
     platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();

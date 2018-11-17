@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {IonicPage, NavController, NavParams, ViewController} from 'ionic-angular';
+import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 
 @IonicPage()
 @Component({
@@ -14,10 +15,11 @@ export class AdminAddEmployeePage {
   form: FormGroup;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
-              formBuilder: FormBuilder) {
+              formBuilder: FormBuilder, public eap: EthereumApiProvider) {
 
     this.form = formBuilder.group({
       name: ['', Validators.required],
+      designation: ['', Validators.required],
       image: ['', Validators.required],
       address: ['', Validators.required]
     });
@@ -44,7 +46,7 @@ export class AdminAddEmployeePage {
     if (!this.form.valid) {
       return;
     }
-    console.log(this.form.value);
+    this.eap.addNewEmployee(this.form.value);
     this.viewCtrl.dismiss(this.form.value);
   }
 

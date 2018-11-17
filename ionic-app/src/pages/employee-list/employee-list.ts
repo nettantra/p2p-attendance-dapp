@@ -24,6 +24,7 @@ export class EmployeeListPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad EmployeeListPage');
+
   }
 
 

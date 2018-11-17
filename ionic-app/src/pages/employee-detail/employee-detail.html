@@ -1,16 +1,35 @@
 <ion-header>
-
   <ion-navbar>
-    <ion-title>{{employee[2]}}</ion-title>
+    <ion-title>Attendance Report</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content>
-  <div class="item-profile" text-center #profilePic [style.background-image]="'url(' + employee[4] + ')'">  </div>
+
+  <div class="item-profile" text-center #profilePic [style.background-image]="'url(' + employee[4] + ')'"></div>
   <div class="item-detail" padding>
     <h2>{{employee[2]}}</h2>
     <p>{{employee[3]}}</p>
   </div>
+
+
+  <ion-item *ngIf="loader" text-center style="margin-top: 110px !important;" no-lines>
+    <ion-spinner style="color: #000" name="ios-small"></ion-spinner>
+  </ion-item>
+
+  <ion-card style="margin-top: 110px !important;" *ngIf="showEmployeeReport">
+    <ion-card-header style="background: #c7c7c7ab !important;" [innerHTML]="todayDate"></ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-icon name="thumbs-up" style="color: #d883e0 !important;" item-start></ion-icon>
+        Attendance Report
+        <ion-badge item-end>P</ion-badge>
+      </ion-item>
+
+      <ion-item right no-padding style="text-align: right" no-margin>
+        <a style="font-size: 1.3rem">More Result</a>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

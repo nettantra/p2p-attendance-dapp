@@ -8,6 +8,8 @@ declare let require: any;
 declare let window: any;
 let employees: any = [];
 
+let accountOwner: '0x0';
+
 //local ganache
 let evaluation_attendee_abi = require('../../../../build/contracts/EvaluateAttendance.json');
 let provider_url = 'http://localhost:7545';
@@ -22,8 +24,9 @@ export class EthereumApiProvider {
   private web3Provider: null;
   EvaluationAttendeeContract: any;
   attendanceMarker: string = "";
-  constructor(public http: HttpClient, public storage: Storage) {
 
+
+  constructor(public http: HttpClient, public storage: Storage) {
     this.web3Provider = new Web3.providers.HttpProvider(provider_url);
     window.web3 = new Web3(this.web3Provider);
     this.EvaluationAttendeeContract = TruffleContract(evaluation_attendee_abi);
@@ -50,6 +53,7 @@ export class EthereumApiProvider {
       console.log(err);
     })
 
+
   }
 
   // async event to get total number of attendee
@@ -73,6 +77,7 @@ export class EthereumApiProvider {
         if (err === null) {
           window.web3.eth.getBalance(account, function (err, balance) {
             if (err === null) {
+              accountOwner = account;
               return resolve({fromAccount: account, balance: (window.web3.fromWei(balance, "ether")).toNumber()});
             } else {
               return reject({fromAccount: "error", balance: 0});
@@ -109,6 +114,7 @@ export class EthereumApiProvider {
 
   // for mark attendance
   async markAttendance(attendeeAddress, opinion, date, fromAccount) {
+    console.log();
     return await new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
         instance.markAttendance(attendeeAddress, opinion, date, {
@@ -137,7 +143,7 @@ export class EthereumApiProvider {
     });
   }
 
-  //async event to get all the employees
+  //event to get all the employees
   getAllAttendee(params?: any) {
     if (!params) {
       return employees;
@@ -145,7 +151,7 @@ export class EthereumApiProvider {
     // params = "sibabrat";
     return employees.filter((employee) => {
       for (let key in params) {
-        console.log(employee,params,key);
+        console.log(employee, params, key);
         let field = employee[key];
         if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
           return employee;
@@ -157,5 +163,34 @@ export class EthereumApiProvider {
     });
   }
 
+
+  // add new employee
+  addNewEmployee(params?: any) {
+    if (!params) {
+      return employees;
+    }
+    let that = this;
+    let EvaluateInstance;
+    this.EvaluationAttendeeContract.deployed().then(function (instance) {
+      EvaluateInstance = instance;
+      return EvaluateInstance.attendeesCount()
+        .then(function (count) {
+          employees.push([Number(count) + 1, params.address, params.name, params.designation, params.image]);
+        })
+    });
+
+    new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then(function (instance) {
+        instance.addAttendee(params.name, params.designation, params.image, params.address, {
+          from: accountOwner,
+          gas: 4700000
+        });
+        return resolve({result: true});
+      }).catch(function (error) {
+        console.log(error);
+      });
+    });
+    return employees;
+  }
 
 }

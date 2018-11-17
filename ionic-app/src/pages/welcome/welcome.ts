@@ -31,9 +31,9 @@ export class WelcomePage {
               private alertCtrl: AlertController, public toastCtrl: ToastController, private eap: EthereumApiProvider,
               public storage: Storage) {
 
-    storage.remove('auth_key');
-    storage.remove('user_type');
-    storage.remove('attendance_date');
+    // storage.remove('auth_key');
+    // storage.remove('user_type');
+    // storage.remove('attendance_date');
     this.menu.swipeEnable(false);
 
     this.myStyle = {

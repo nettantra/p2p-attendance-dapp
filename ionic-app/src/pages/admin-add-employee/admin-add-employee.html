@@ -21,13 +21,16 @@
   <form *ngIf="form" [formGroup]="form" (ngSubmit)="createItem()">
     <ion-list style="margin-top: 10px !important;">
       <ion-item>
-        <ion-input type="text" placeholder="Employee Name"  formControlName="name" ></ion-input>
+        <ion-input type="text" placeholder="Employee Name" formControlName="name"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-input type="text" placeholder="Image URL"  formControlName="image" ></ion-input>
+        <ion-input type="text" placeholder="Employee Designation" formControlName="designation"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-input type="text" placeholder="Account Address"  formControlName="address" ></ion-input>
+        <ion-input type="text" placeholder="Image URL" formControlName="image"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input type="text" placeholder="Account Address" formControlName="address"></ion-input>
       </ion-item>
     </ion-list>
   </form>

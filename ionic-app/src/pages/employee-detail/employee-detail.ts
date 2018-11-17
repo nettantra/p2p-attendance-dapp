@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {Component} from '@angular/core';
+import {IonicPage, NavController, NavParams} from 'ionic-angular';
 
 /**
  * Generated class for the EmployeeDetailPage page.
@@ -8,6 +8,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
  * Ionic pages and navigation.
  */
 
+
 @IonicPage()
 @Component({
   selector: 'page-employee-detail',
@@ -15,13 +16,24 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class EmployeeDetailPage {
   employee: any;
+  todayDate: any;
+  showEmployeeReport: boolean = false;
+  loader: boolean = true;
+
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.employee = navParams.get('employee');
     console.log(this.employee['name']);
+    let today = new Date();
+    this.todayDate = today.toDateString();
+
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad EmployeeDetailPage');
+    setTimeout(() => {
+      this.loader = false;
+      this.showEmployeeReport = true;
+      console.log('ionViewDidLoad EmployeeDetailPage');
+    }, 2000);
   }
 
 }

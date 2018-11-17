@@ -1,6 +1,16 @@
 <ion-header no-shadow>
   <ion-navbar>
+
+    <ion-buttons left >
+      <button ion-button icon-only class="refresh_status" (click)="logoutUser()">
+        <ion-icon style="color: #000" name="power"></ion-icon>
+      </button>
+    </ion-buttons>
+
+
     <ion-label text-center="" style="color: #000" [innerHTML]="todayDate">Date: 11/08/2018</ion-label>
+
+
 
     <ion-buttons ion-button icon-only right *ngIf="refreshLoader">
       <ion-spinner style="color: #000" name="ios-small"></ion-spinner>
