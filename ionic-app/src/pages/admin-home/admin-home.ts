@@ -30,7 +30,6 @@ export class AdminHomePage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad AdminHomePage');
   }
 
   /* add employee */

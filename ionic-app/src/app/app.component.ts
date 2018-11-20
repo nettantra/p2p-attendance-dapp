@@ -28,7 +28,8 @@ export class MyApp {
     {title: 'Employee', component: 'EmployeeListPage'},
     {title: 'Admin Add Employee', component: 'AdminAddEmployeePage'},
     {title: 'Admin Check Result', component: 'AdminCheckResultPage'},
-    {title: 'About Employee', component: 'EmployeeDetailPage'}
+    {title: 'About Employee', component: 'EmployeeDetailPage'},
+    {title: 'Complete Details', component: 'CompleteAttendanceDetailsPage'}
   ]
 
   constructor(platform: Platform, private statusBar: StatusBar, private splashScreen: SplashScreen,

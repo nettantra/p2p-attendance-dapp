@@ -24,11 +24,11 @@
       <ion-item>
         <ion-icon name="thumbs-up" style="color: #d883e0 !important;" item-start></ion-icon>
         Attendance Report
-        <ion-badge item-end>P</ion-badge>
+        <ion-badge item-end [innerHTML]=attendanceReport></ion-badge>
       </ion-item>
 
       <ion-item right no-padding style="text-align: right" no-margin>
-        <a style="font-size: 1.3rem">More Result</a>
+        <a (click)="moreResult()" style="font-size: 1.3rem">More Result</a>
       </ion-item>
     </ion-card-content>
   </ion-card>

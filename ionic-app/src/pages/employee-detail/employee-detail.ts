@@ -1,13 +1,6 @@
 import {Component} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
-
-/**
- * Generated class for the EmployeeDetailPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
+import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 
 @IonicPage()
 @Component({
@@ -19,21 +12,32 @@ export class EmployeeDetailPage {
   todayDate: any;
   showEmployeeReport: boolean = false;
   loader: boolean = true;
+  attendanceReport: string = "";
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public eap: EthereumApiProvider) {
     this.employee = navParams.get('employee');
-    console.log(this.employee['name']);
     let today = new Date();
     this.todayDate = today.toDateString();
-
   }
 
   ionViewDidLoad() {
     setTimeout(() => {
       this.loader = false;
       this.showEmployeeReport = true;
-      console.log('ionViewDidLoad EmployeeDetailPage');
-    }, 2000);
+      this.eap.getAttendanceReport(this.employee[1]).then((res) => {
+        this.attendanceReport = res.result;
+      });
+    }, 100);
+  }
+
+  // for more details page
+  moreResult() {
+    let that = this;
+    this.navCtrl.push('CompleteAttendanceDetailsPage', {
+      employeeDetails:that.employee
+    });
+
+
   }
 
 }

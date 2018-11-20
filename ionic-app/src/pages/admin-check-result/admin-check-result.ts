@@ -19,7 +19,6 @@ export class AdminCheckResultPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad AdminCheckResultPage');
   }
 
 }

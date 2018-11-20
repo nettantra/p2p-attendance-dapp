@@ -23,7 +23,6 @@ export class EmployeeListPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad EmployeeListPage');
 
   }
 
@@ -33,7 +32,6 @@ export class EmployeeListPage {
   }
 
   openEmployee(employee) {
-    console.log(employee);
     this.navCtrl.push('EmployeeDetailPage', {
       employee:employee
     });

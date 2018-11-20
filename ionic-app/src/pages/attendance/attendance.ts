@@ -22,7 +22,6 @@ export class AttendancePage {
   attendeesCount: number = 1;
   lastPageStatus: boolean = false;
   fromAccount: string = "";
-  rand: number;
   icon_status_p: boolean = false;
   icon_status_a: boolean = false;
   storageForValidation: any = [];
@@ -40,7 +39,7 @@ export class AttendancePage {
   // for random number
   possible_attendee_num: any = [];
   total_attendee_count: number = 0;
-  random_num: 0;
+  random_num: 1;
   max_attendee: number = 5;
 
   constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController, public storage: Storage, private eap: EthereumApiProvider) {
@@ -63,7 +62,7 @@ export class AttendancePage {
     setTimeout(() => {
       this.spinner = false;
       this.storage.get('attendance_date').then((prev_date) => {
-        if (prev_date != this.changeDate()) {
+        if (prev_date != this.eap.dateInSeconds()) {
           this.side_status = true;
           this.storageForValidation = [];
           this.storage.set('attendee_address', this.storageForValidation);
@@ -89,10 +88,10 @@ export class AttendancePage {
 
   // attendeeLoad
   attendeeLoad(slide_num = 1) {
-    console.log(this.random_num);
     this.random_num = this.possible_attendee_num[Math.floor(Math.random() * this.possible_attendee_num.length)];
     let index = this.possible_attendee_num.indexOf(this.random_num);
     if (index !== -1) this.possible_attendee_num.splice(index, 1);
+    console.log(this.random_num);
     this.eap.talkToContract(slide_num, this.random_num, this.max_attendee)
       .then(value => {
         // @ts-ignore
@@ -152,15 +151,13 @@ export class AttendancePage {
   // mark attendance and save opinion
   markAttendance(opinion = 0) {
     this.button_name = "NEXT";
-    this.storage.set('attendance_date', this.changeDate());
+    this.storage.set('attendance_date', this.eap.dateInSeconds());
     let that = this;
     if (!opinion) return false;
-    let date = this.changeDate();
+    let date = this.eap.dateInSeconds();
 
     this.storage.get('attendee_address').then((attendees) => {
-      // console.log(attendees);
       let status = attendees.includes(that.attendeeAddress);
-      // console.log(status);
       if (!status) {
         if (opinion == 1) {
           let toast = this.toastCtrl.create({
@@ -180,7 +177,6 @@ export class AttendancePage {
           toast.present();
           this.icon_status_a = true;
         }
-        // console.log(this.web3Provider, that.attendeeAddress, opinion, that.fromAccount);
         this.storageForValidation.push(that.attendeeAddress);
         this.storage.set('attendee_address', this.storageForValidation);
         this.eap.markAttendance(that.attendeeAddress, opinion, date, this.attendanceMarker);
@@ -211,19 +207,6 @@ export class AttendancePage {
     let today = new Date();
     this.todayDate = today.toDateString();
   }
-
-  // change date
-  changeDate() {
-    let date = new Date();
-    let formattedDate = ('0' + date.getDate()).slice(-2);
-    let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
-    let formattedYear = date.getFullYear().toString();
-    let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
-    let date_format = new Date(dateString);
-    let seconds = date_format.getTime() / 1000
-    return seconds;
-  }
-
 
   // for attendee logout
   logoutUser() {

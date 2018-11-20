@@ -32,7 +32,6 @@ export class AdminAddEmployeePage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad AdminAddEmployeePage');
   }
 
   // cancel adding new attendee

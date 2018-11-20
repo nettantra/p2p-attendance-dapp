@@ -7,7 +7,6 @@ import {Storage} from "@ionic/storage";
 declare let require: any;
 declare let window: any;
 let employees: any = [];
-
 let accountOwner: '0x0';
 
 //local ganache
@@ -25,7 +24,6 @@ export class EthereumApiProvider {
   EvaluationAttendeeContract: any;
   attendanceMarker: string = "";
 
-
   constructor(public http: HttpClient, public storage: Storage) {
     this.web3Provider = new Web3.providers.HttpProvider(provider_url);
     window.web3 = new Web3(this.web3Provider);
@@ -37,23 +35,26 @@ export class EthereumApiProvider {
 
     // all the employee list
     employees = [];
-    let electionInstance;
+    let evaluationInstance;
     this.EvaluationAttendeeContract.deployed().then(function (instance) {
-      electionInstance = instance;
-      return electionInstance.attendeesCount();
+      evaluationInstance = instance;
+      return evaluationInstance.attendeesCount();
     }).then(function (attendeesCount) {
       for (let i = 1; i <= attendeesCount; i++) {
-        electionInstance.attendees(i).then(function (attendee) {
-          employees.push(attendee)
+        evaluationInstance.attendees(i).then(function (attendee) {
+          employees.push(attendee);
         }).catch(function (err) {
           console.log(err);
         })
       }
     }).catch(function (err) {
       console.log(err);
-    })
+    });
 
+    this.getBlockInfo();
+  }
 
+  ionViewDidLoad() {
   }
 
   // async event to get total number of attendee
@@ -90,15 +91,14 @@ export class EthereumApiProvider {
 
   // async event to talk to blocks
   async talkToContract(slide_num, random_num = 1, max_attendee = 5) {
-    // console.log(random_num);
-    let electionInstance;
+    let evaluationInstance;
     if (slide_num <= max_attendee) {
       return await new Promise((resolve, reject) => {
         this.EvaluationAttendeeContract.deployed().then(function (instance) {
-          electionInstance = instance;
+          evaluationInstance = instance;
           return instance.attendeesCount();
         }).then(function (attendeesCount) {
-          electionInstance.attendees(random_num).then(function (attendee) {
+          evaluationInstance.attendees(random_num).then(function (attendee) {
             return resolve({attendee_details: attendee, total_attendee_count: attendeesCount, status: 200});
           });
         }).catch(function (error) {
@@ -114,7 +114,6 @@ export class EthereumApiProvider {
 
   // for mark attendance
   async markAttendance(attendeeAddress, opinion, date, fromAccount) {
-    console.log();
     return await new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
         instance.markAttendance(attendeeAddress, opinion, date, {
@@ -151,7 +150,6 @@ export class EthereumApiProvider {
     // params = "sibabrat";
     return employees.filter((employee) => {
       for (let key in params) {
-        console.log(employee, params, key);
         let field = employee[key];
         if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
           return employee;
@@ -163,8 +161,7 @@ export class EthereumApiProvider {
     });
   }
 
-
-  // add new employee
+  //event to  add new employee
   addNewEmployee(params?: any) {
     if (!params) {
       return employees;
@@ -185,12 +182,74 @@ export class EthereumApiProvider {
           from: accountOwner,
           gas: 4700000
         });
-        return resolve({result: true});
+        resolve({result: true});
       }).catch(function (error) {
         console.log(error);
       });
     });
+
     return employees;
+  }
+
+  // async event to get attendance result of employee
+  async getAttendanceReport(params?: any) {
+    if (!params) {
+      return employees;
+    }
+
+    new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then((instance) => {
+        return instance.evaluation(this.dateInSeconds(), {
+          from: accountOwner,
+          gas: 4700000
+        }).then(function (res) {
+          resolve({result: true});
+        }).catch(function (err) {
+          console.log(err);
+        });
+      }).catch(function (error) {
+        console.log(error);
+      });
+    });
+
+    let evaluationInstance;
+    return await new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then(function (instance) {
+        evaluationInstance = instance;
+        return evaluationInstance.evaluateCount()
+          .then(function (evaluationCount) {
+            for (let i = 1; i < evaluationCount; i++) {
+              evaluationInstance.evaluated_attendees(i).then(function (attendee_res) {
+                if (attendee_res[0].toLowerCase() == params.toLowerCase()) {
+                 console.log(attendee_res[0],attendee_res[1],params.toLowerCase())
+                  if (parseInt(attendee_res[1]) == 2)
+                    return resolve({result: "A"});
+                  else if (parseInt(attendee_res[1]) == 1)
+                    return resolve({result: "P"});
+                  else return resolve({result: "N/A"});
+                }
+              }).catch(function (err) {
+                console.log(err);
+              })
+            }
+          })
+      }).catch(function (error) {
+        console.log(error);
+      });
+    });
+  }
+
+
+  // change date
+  dateInSeconds() {
+    let date = new Date();
+    let formattedDate = ('0' + date.getDate()).slice(-2);
+    let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
+    let formattedYear = date.getFullYear().toString();
+    let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
+    let date_format = new Date(dateString);
+    let seconds = date_format.getTime() / 1000;
+    return seconds;
   }
 
 }
