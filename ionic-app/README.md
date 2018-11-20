@@ -1,7 +1,7 @@
 # P2P Attendance App 🎮
 
 The P2P Attendance App is a hybrid mobile application of P2P Attendance where Attendance Giver can mark attendance for employees and admin can add/evaluate attendances.
-This is elegant and powerful mobile application for both android and ios platform which enhances the attendances process with the help of web3 js api.
+This is an elegant and powerful mobile application for both android and ios platform which enhances the attendances process with the help of web3 js api.
 
 ## Framework Used For Mobile App 
 P2P Attendance App uses Ionic framework for mobile application as it is very popular and robust framework to build hybrid application for android/ios/windows platforms.
