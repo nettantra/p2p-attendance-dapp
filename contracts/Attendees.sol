@@ -36,15 +36,15 @@ contract Attendees {
     }
 
     // add attendee to attendees mapping
-    function addAttendee(string name, string about, string img_url, address public_key) onlyOwner public {
+    function addAttendee(string _name, string _about, string _img_url, address _public_key) onlyOwner public {
         attendeesCount++;
-        attendees[attendeesCount] = AttendeesStructure(attendeesCount, public_key, name, about, img_url);
+        attendees[attendeesCount] = AttendeesStructure(attendeesCount, _public_key, _name, _about, _img_url);
     }
 
     // authenticate users
-    function authenticateUser(address _userAdd) public view returns (bool) {
+    function authenticateUser(address _user_add) public view returns (bool) {
         for (uint i = 1; i <= attendeesCount; i++) {
-            if (attendees[i].public_key == _userAdd) return true;
+            if (attendees[i].public_key == _user_add) return true;
         }
         return false;
     }
@@ -72,23 +72,23 @@ contract MarkAttendance is Attendees {
     }
 
     // save mark attendance details to attendeeDetails mapping
-    function markAttendance(address attendee, uint attendance_opinion, uint256 date) public {
+    function markAttendance(address _attendee, uint _attendance_opinion, uint256 _date) public {
         attendeeDetailsCount ++;
-        attendeeDetails[attendeeDetailsCount] = AttendeeDetails(msg.sender, attendee, attendance_opinion, now, date);
+        attendeeDetails[attendeeDetailsCount] = AttendeeDetails(msg.sender, _attendee, _attendance_opinion, now, _date);
     }
 
     // fetter function for attendee details count
     function getMarkedAttendeeDetailsCount() public view returns (uint) {return attendeeDetailsCount;}
 
     //getter function for attendee details
-    function getAttendeeDetails(uint _count, uint256 date) public view returns (address, uint, uint256) {
+    function getAttendeeDetails(uint _count, uint256 _date) public view returns (address, uint, uint256) {
         address attendee_add = attendees[_count].public_key;
         uint256 doa = attendeeDetails[_count].date_of_attendance;
         uint present = 0;
         uint absent = 0;
         uint opinion = 3;
         for (uint i = 1; i <= attendeeDetailsCount; i++) {
-            if (attendee_add == attendeeDetails[i].attendee && doa == date)
+            if (attendee_add == attendeeDetails[i].attendee && doa == _date)
             {
                 if (attendeeDetails[i].attendance_opinion == 1) present++;
                 else if (attendeeDetails[i].attendance_opinion == 2) absent++;
@@ -101,7 +101,7 @@ contract MarkAttendance is Attendees {
             if (present == absent) opinion = 1;
         }
 
-        return (attendee_add, opinion, date);
+        return (attendee_add, opinion, _date);
     }
 
 }
@@ -129,16 +129,36 @@ contract EvaluateAttendance is MarkAttendance {
     }
 
     // evaluate attendance result on the basic of attendee and date
-    function evaluation(uint256 date) public {
+    function evaluation(uint256 _date) public {
         evaluateCount = 1;
         r_opinion;
         r_date_of_attendance;
         r_attendee_address;
         for (uint i = 1; i <= attendeesCount; i++) {
-            (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, date);
+            (r_attendee_address, r_opinion, r_date_of_attendance) = getAttendeeDetails(i, _date);
             evaluated_attendees[evaluateCount] = EvaluatedAttendee(r_attendee_address, r_opinion, r_date_of_attendance, now);
             evaluateCount++;
         }
+    }
+
+    // for getting attendance result as per date and address
+    function attendanceResult(uint256 _date, address _addr) public  view returns (uint) {
+        uint present = 0;
+        uint absent = 0;
+        uint opinion = 3;
+        for (uint i = 1; i <= attendeeDetailsCount; i++) {
+            if (_addr == attendeeDetails[i].attendee && attendeeDetails[i].date_of_attendance  == _date)
+            {
+                if (attendeeDetails[i].attendance_opinion == 1) present++;
+                else if (attendeeDetails[i].attendance_opinion == 2) absent++;
+            }
+        }
+        if (present != 0 || absent != 0) {
+            if (present < absent) opinion = 2;
+            if (present > absent) opinion = 1;
+            if (present == absent) opinion = 1;
+        }
+        return opinion;
     }
 
 }
