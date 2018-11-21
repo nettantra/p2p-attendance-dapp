@@ -39,7 +39,7 @@ export class AttendancePage {
   // for random number
   possible_attendee_num: any = [];
   total_attendee_count: number = 0;
-  random_num: 1;
+  random_num: 0;
   max_attendee: number = 5;
 
   constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController, public storage: Storage, private eap: EthereumApiProvider) {
@@ -62,6 +62,7 @@ export class AttendancePage {
     setTimeout(() => {
       this.spinner = false;
       this.storage.get('attendance_date').then((prev_date) => {
+        console.log(prev_date,this.eap.dateInSeconds());
         if (prev_date != this.eap.dateInSeconds()) {
           this.side_status = true;
           this.storageForValidation = [];
@@ -91,7 +92,6 @@ export class AttendancePage {
     this.random_num = this.possible_attendee_num[Math.floor(Math.random() * this.possible_attendee_num.length)];
     let index = this.possible_attendee_num.indexOf(this.random_num);
     if (index !== -1) this.possible_attendee_num.splice(index, 1);
-    console.log(this.random_num);
     this.eap.talkToContract(slide_num, this.random_num, this.max_attendee)
       .then(value => {
         // @ts-ignore

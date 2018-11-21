@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import * as Web3 from 'web3';
 import * as TruffleContract from 'truffle-contract';
 import {Storage} from "@ionic/storage";
+import {Observable} from "rxjs";
 
 declare let require: any;
 declare let window: any;
@@ -193,16 +194,19 @@ export class EthereumApiProvider {
 
   // async event to get attendance result of employee
   async getAttendanceReport(params?: any) {
+
     if (!params) {
-      return employees;
+      return "Nothing"
     }
 
+    // evaluation process
     new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then((instance) => {
         return instance.evaluation(this.dateInSeconds(), {
           from: accountOwner,
           gas: 4700000
         }).then(function (res) {
+          console.log(res);
           resolve({result: true});
         }).catch(function (err) {
           console.log(err);
@@ -221,7 +225,7 @@ export class EthereumApiProvider {
             for (let i = 1; i < evaluationCount; i++) {
               evaluationInstance.evaluated_attendees(i).then(function (attendee_res) {
                 if (attendee_res[0].toLowerCase() == params.toLowerCase()) {
-                 console.log(attendee_res[0],attendee_res[1],params.toLowerCase())
+                  console.log(attendee_res[0], attendee_res[1], params.toLowerCase())
                   if (parseInt(attendee_res[1]) == 2)
                     return resolve({result: "A"});
                   else if (parseInt(attendee_res[1]) == 1)
@@ -239,6 +243,29 @@ export class EthereumApiProvider {
     });
   }
 
+  // get complete attendance report
+  moreAttendanceResult(address) {
+    return new Observable((observer) => {
+      for (let i = 0; i < 10; i++) {
+        observer.next(this.getResult(this.dateInSeconds() - (86400*i), address))
+      }
+    });
+  }
+
+
+  getResult(date, address) {
+    return new Promise((resolve, reject) => {
+      this.EvaluationAttendeeContract.deployed().then((instance) => {
+        return instance.attendanceResult(date, address).then(function (res) {
+          resolve({attendance: res.toString(),date:date});
+        }).catch(function (err) {
+          resolve({data: 0});
+        });
+      }).catch(function (error) {
+        resolve({data: 0});
+      });
+    });
+  }
 
   // change date
   dateInSeconds() {
@@ -250,6 +277,9 @@ export class EthereumApiProvider {
     let date_format = new Date(dateString);
     let seconds = date_format.getTime() / 1000;
     return seconds;
+
+   /* let date = new Date(); let seconds = date.getTime();
+    return seconds;*/
   }
 
 }

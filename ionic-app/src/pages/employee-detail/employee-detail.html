@@ -14,11 +14,11 @@
   </div>
 
 
-  <ion-item *ngIf="loader" text-center style="margin-top: 110px !important;" no-lines>
+  <ion-item *ngIf="showEmployeeReport == false" text-center style="margin-top: 110px !important;" no-lines>
     <ion-spinner style="color: #000" name="ios-small"></ion-spinner>
   </ion-item>
 
-  <ion-card style="margin-top: 110px !important;" *ngIf="showEmployeeReport">
+  <ion-card style="margin-top: 110px !important;" *ngIf="showEmployeeReport == true">
     <ion-card-header style="background: #c7c7c7ab !important;" [innerHTML]="todayDate"></ion-card-header>
     <ion-card-content>
       <ion-item>

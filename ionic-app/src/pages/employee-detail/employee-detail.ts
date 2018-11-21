@@ -11,7 +11,6 @@ export class EmployeeDetailPage {
   employee: any;
   todayDate: any;
   showEmployeeReport: boolean = false;
-  loader: boolean = true;
   attendanceReport: string = "";
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public eap: EthereumApiProvider) {
@@ -21,22 +20,20 @@ export class EmployeeDetailPage {
   }
 
   ionViewDidLoad() {
-    setTimeout(() => {
-      this.loader = false;
+    this.eap.getAttendanceReport(this.employee[1]).then((res) => {
+      // @ts-ignore
+      this.attendanceReport = res.result;
       this.showEmployeeReport = true;
-      this.eap.getAttendanceReport(this.employee[1]).then((res) => {
-        this.attendanceReport = res.result;
-      });
-    }, 100);
+    });
+
   }
 
   // for more details page
   moreResult() {
     let that = this;
     this.navCtrl.push('CompleteAttendanceDetailsPage', {
-      employeeDetails:that.employee
+      employeeDetails: that.employee
     });
-
 
   }
 
