@@ -21,12 +21,14 @@ contract Attendees {
     // constructor to save some attendees
     constructor() public {
         owner = msg.sender;
-        addAttendee("Biswaindu", "Content Writer", "https://amp.businessinsider.com/images/5ac518b57a74af23008b4642-750-563.jpg", 0x3b220bdD0D1C1b37AC6d434f027CC88a5b51B878);
-        addAttendee("Sibabrat", "Application Developer", "https://www.evolllution.com/wp-content/uploads/2015/03/sized_Big-Name-Universities-Must-Respond-to-Student-Expectations.jpg", 0x0c8615A3d73b0AA9342A06A3d66C5f723D63E2Ed);
-        addAttendee("Smruti", "Content Writer", "https://m.blog.hu/do/dolgozzmagadon/image/student2.jpg", 0x9D5AeBBaf8026021ad33A27748ae7d5E94C7E891);
-        addAttendee("Prabina", "Developer Trainee", "https://www.ldatschool.ca/wp-content/uploads/2014/02/A-teachers-journey-with-student-self-advocacy.jpg", 0xab70787066CDeEb7f402b7364fac3a8BD7851c8D);
-        addAttendee("Dev Sir", "CTO/CEO", "https://d1ay3zqomhlmi.cloudfront.net/wp-content/uploads/2018/07/about-image.jpg", 0x54a51E5d44C35F8C175270d98fd633440f929D21);
-        addAttendee("Pitabash Sir", "Software Developer", "https://d1ay3zqomhlmi.cloudfront.net/wp-content/uploads/2018/07/development-section.png", 0xfb98737a67F6f577f9b88F5496e95CB98601C3E7);
+        addAttendee("Devadutta Sahoo", "CEO/CTO", "https://img.theweek.in/content/dam/week/news/entertainment/images/2018/3/13/amitabh-bachchan-salil-bera.jpg", 0x9D5AeBBaf8026021ad33A27748ae7d5E94C7E891);
+        addAttendee("Swetansu Mohapatra", "Application Developer", "http://stat2.bollywoodhungama.in/wp-content/uploads/2017/05/Sanjay-Dutt-walks-out-of-Total-Dhamaal.jpg", 0xab70787066CDeEb7f402b7364fac3a8BD7851c8D);
+        addAttendee("Pitabas Behera", "Managing Director", "https://s3.india.com/wp-content/uploads/2017/06/Aamir-Khan.jpg", 0x54a51E5d44C35F8C175270d98fd633440f929D21);
+        addAttendee("Sanjeev Nanda", "Human Resources", "https://img.etimg.com/thumb/height-480,width-640,imgsize-9960,msid-56595593/.jpg", 0xfb98737a67F6f577f9b88F5496e95CB98601C3E7);
+        addAttendee("Prabina Parichha", "Application Trainee", "http://2.bp.blogspot.com/__5vnMiF3qLg/TO-0BpSXIhI/AAAAAAAAC-U/nHbC0PrtvHI/s1600/Genelia%252BDsouza%252Bcute.jpg", 0x45e059d59BcdD9011a1F23D7638272E855F578f6);
+        addAttendee("SmrutiRekha Panda", "Content Writer", "https://s3.india.com/wp-content/uploads/2017/08/ileana-d-cruz-6.png", 0x81185cd003EE10e8ed01C6a932a24CB191C5CAfd);
+        addAttendee("Sibabrat Swain", "Application Developer", "http://cdn.persiangig.com/preview/7tb5eZgr3W/large/6106.jpg", 0x92BF7faa7f3d76BCbd2d206f2AD9d928D0D60779);
+        addAttendee("Biswaindu Parida", "Content Writer", "https://cdn1.thr.com/sites/default/files/imagecache/scale_crop_768_433/2016/11/anil_kapoor_-_getty_-_h_-_2016.jpg", 0x3b220bdD0D1C1b37AC6d434f027CC88a5b51B878);
     }
 
     // modifier to add the attendee by owner only
