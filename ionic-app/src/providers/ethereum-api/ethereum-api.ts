@@ -247,7 +247,7 @@ export class EthereumApiProvider {
   moreAttendanceResult(address) {
     return new Observable((observer) => {
       for (let i = 0; i < 10; i++) {
-        observer.next(this.getResult(this.dateInSeconds() - (86400*i), address))
+        observer.next(this.getResult(this.dateInSeconds() - (86400000 * i), address))
       }
     });
   }
@@ -257,29 +257,46 @@ export class EthereumApiProvider {
     return new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then((instance) => {
         return instance.attendanceResult(date, address).then(function (res) {
-          resolve({attendance: res.toString(),date:date});
+          resolve({attendance: res.toString(), date: date});
         }).catch(function (err) {
-          resolve({data: 0});
+          resolve({attendance: 0, date: date});
         });
       }).catch(function (error) {
-        resolve({data: 0});
+        resolve({attendance: 0, date: date});
       });
     });
   }
 
   // change date
   dateInSeconds() {
+    /*   let date = new Date();
+       let formattedDate = ('0' + date.getDate()).slice(-2);
+       let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
+       let formattedYear = date.getFullYear().toString();
+       let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
+       let date_format = new Date(dateString);
+       let seconds = date_format.getTime() / 1000;
+       return seconds;*/
+
+
+    /* let date = new Date(); let seconds = date.getTime();
+     return seconds;*/
+
+
     let date = new Date();
     let formattedDate = ('0' + date.getDate()).slice(-2);
     let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
     let formattedYear = date.getFullYear().toString();
     let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
-    let date_format = new Date(dateString);
-    let seconds = date_format.getTime() / 1000;
+    let d = new Date(dateString);
+    let seconds = d.getTime();
     return seconds;
+  }
 
-   /* let date = new Date(); let seconds = date.getTime();
-    return seconds;*/
+  secondsInDate(seconds) {
+    let date = new Date(seconds);
+    let day = date.toDateString();
+    return day;
   }
 
 }

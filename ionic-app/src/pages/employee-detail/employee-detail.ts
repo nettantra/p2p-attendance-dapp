@@ -15,17 +15,32 @@ export class EmployeeDetailPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public eap: EthereumApiProvider) {
     this.employee = navParams.get('employee');
-    let today = new Date();
-    this.todayDate = today.toDateString();
   }
 
   ionViewDidLoad() {
-    this.eap.getAttendanceReport(this.employee[1]).then((res) => {
-      // @ts-ignore
-      this.attendanceReport = res.result;
-      this.showEmployeeReport = true;
-    });
+    /*    this.eap.getAttendanceReport(this.employee[1]).then((res) => {
+          // @ts-ignore
+          this.attendanceReport = res.result;
+          this.showEmployeeReport = true;
+        });  */
 
+    setTimeout((time) => {
+
+      this.eap.getResult(this.eap.dateInSeconds(), this.employee[1]).then((res) => {
+        // @ts-ignore
+        if (res.attendance == 1) this.attendanceReport = "P";
+        else { // @ts-ignore
+          // @ts-ignore
+          if (res.attendance == 2) this.attendanceReport = "A";
+          else this.attendanceReport = "N/A";
+        }
+
+        // @ts-ignore
+        this.todayDate = this.eap.secondsInDate(res.date);
+        this.showEmployeeReport = true;
+      });
+
+    }, 1000)
   }
 
   // for more details page

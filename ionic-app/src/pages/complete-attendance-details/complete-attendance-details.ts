@@ -33,6 +33,7 @@ export class CompleteAttendanceDetailsPage {
       .subscribe(msg => {
           // @ts-ignore
           msg.then((r) => {
+            console.log(r);
             if (r.attendance != 3) {
               if (r.attendance == 2) this.total_report.push("A");
               else this.total_report.push("P");
