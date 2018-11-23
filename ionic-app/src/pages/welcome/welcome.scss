@@ -1,19 +1,9 @@
 
-
-
 page-welcome {
-
-  /* #login-card {
-     width: 55% !important;
-     height: 55% !important;
-   }
-   .card-md{
-     background: #ececece8 !important;
-   }*/
-
   .card-md {
     font-size: 1.2rem;
   }
+  // for central  panel
   .panel {
     font-family: 'Source Sans Pro';
     //font-size: 1.36em;
@@ -31,23 +21,19 @@ page-welcome {
     box-sizing: border-box;
     z-index: 100;
   }
-
   .panel h1 {
     font-size: 1.8em;
     font-weight: 700;
     text-align: center;
-    color: #222;
+    color: map_get($colors, dark);
     margin-top: -4px;
   }
-
   .panel .r-version {
     display: block;
     margin-bottom: 7px;
     text-align: center;
     font-size: .75em;
   }
-
- 
   .panel h2 {
     font-weight: 400;
     font-size: 0.8em;
@@ -71,18 +57,10 @@ page-welcome {
     text-align: center;
     height: 34px;
     line-height: 34px;
-    background: #fff;
+    background: map_get($colors, white);
     margin-top: 10px;
-    color: #222;
+    color: map_get($colors, dark);
     border-radius: 4px;
   }
 
-  /* for alert custom css */
-
-
-  .alertCustomCss{
-    .alert-ios .alert-wrapper{
-      background: red !important;
-    }
-  }
 }

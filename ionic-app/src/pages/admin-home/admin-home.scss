@@ -1,19 +1,12 @@
 page-admin-home {
 
+  // for toolbar
   .toolbar-background {
     background: transparent;
     border-color: transparent;
   }
 
-
-
-  background-image: url(http://hdqwalls.com/wallpapers/abstract-blockchain-2t.jpg);
-  /* background-position: 51%; */
-  kground-position-y: 3%;
-  background-position-x: 51%;
-  /* background-position: top; */
-  background-position-y: 62%;
-
+  // for background of page
   .scroll-content {
     background-image: url(http://hdqwalls.com/wallpapers/abstract-blockchain-2t.jpg);
     //background-image: url(https://media-assets-02.thedrum.com/cache/images/thedrum-prod/s3-news-tmp-140656-s3-news-tmp-980-blockchain-2x1-940--2x1--940.png);
@@ -26,6 +19,7 @@ page-admin-home {
 
   }
 
+  // for buttons and header tag in  admin page
   .button_row {
     left: 0;
     right: 0;
@@ -37,7 +31,7 @@ page-admin-home {
     overflow-x: hidden;
     overflow-y: scroll;
   }
-  button{
+  button {
     height: 3.6rem !important;
     border: 3px solid #2b8de021 !important;
     font-size: 1.4rem !important;
@@ -45,8 +39,16 @@ page-admin-home {
     background-color: #ffffff !important;
     margin: 0.4rem 0.2rem !important;
     padding: 0 1.1em !important;
-    font-size: 14px!important;
+    font-size: 14px !important;
     padding: 17px 16px !important;
     border-radius: 8px !important;
+  }
+  h2 {
+    color: map_get($colors, white);
+    font-size: 3.8rem;
+  }
+  h3 {
+    color: map_get($colors, white);
+    font-size: 1.7rem;
   }
 }

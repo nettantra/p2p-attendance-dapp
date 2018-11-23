@@ -1,9 +1,5 @@
 page-complete-attendance-details {
 
-  ion-slide {
-    //width: 50px !important;
-  }
-
   /*promotion 4*/
   .trending1-story {
     white-space: nowrap;
@@ -29,7 +25,6 @@ page-complete-attendance-details {
     height: 70px;
     border-radius: 50%;
   }
-
   .trending1-story_text_1 {
     white-space: nowrap;
     overflow: hidden;
@@ -45,6 +40,11 @@ page-complete-attendance-details {
   .trending1-story_scroll:active {
     background: -webkit-linear-gradient(left top, #edede7 0%, #edede7 100%);
     transform: scale(1.1);
+  }
+
+  // for pagination
+  .paginationList {
+    background: map_get($additional, completeNes);
   }
 
 }

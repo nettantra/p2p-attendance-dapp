@@ -11,24 +11,22 @@
 
 
 <ion-content>
+  <ion-searchbar (ionInput)="searchEmployee($event)" placeholder="Search Employee By Name" type="text"></ion-searchbar>
   <ion-list>
     <ion-item-sliding *ngFor="let employee of currentEmployees">
       <button ion-item (click)="openEmployee(employee)">
         <ion-avatar item-start>
-          <img [src]="employee[4]" />
+          <img [src]="employee[4]"/>
         </ion-avatar>
         <h2>{{employee[2]}}</h2>
         <p>{{employee[3]}}</p>
         <!--<ion-note item-end >28/07/2018 </ion-note>-->
       </button>
-
-      <!--<ion-item-options>
-        <button ion-button color="danger" (click)="deleteEmployee(employee[0])">
-          DELETE
+      <ion-item-options class="cssForRoundSLidingItems" side="right">
+        <button ion-button color="dark" icon-start>
+          <ion-icon name="create"></ion-icon>
         </button>
-      </ion-item-options>-->
+      </ion-item-options>
     </ion-item-sliding>
   </ion-list>
-
-
 </ion-content>

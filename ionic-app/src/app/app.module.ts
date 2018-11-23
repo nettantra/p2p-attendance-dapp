@@ -5,11 +5,9 @@ import { Camera } from '@ionic-native/camera';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { Api } from '../providers';
 import { MyApp } from './app.component';
 import { EthereumApiProvider } from '../providers/ethereum-api/ethereum-api';
 import { IonicStorageModule, Storage } from '@ionic/storage';
-
 
 export function provideSettings(storage: Storage) {
   /**
@@ -37,7 +35,6 @@ export function provideSettings(storage: Storage) {
     MyApp
   ],
   providers: [
-    Api,
     Camera,
     SplashScreen,
     StatusBar,

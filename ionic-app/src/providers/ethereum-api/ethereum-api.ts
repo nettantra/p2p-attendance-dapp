@@ -148,15 +148,16 @@ export class EthereumApiProvider {
     if (!params) {
       return employees;
     }
-    // params = "sibabrat";
     return employees.filter((employee) => {
       for (let key in params) {
-        let field = employee[key];
-        if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
-          return employee;
-        } else if (field == params[key]) {
-          return employee;
-        }
+        let field = employee[2];
+        if (field && params) {
+          if (typeof field == 'string' && field.toLowerCase().indexOf(params[key].toLowerCase()) >= 0) {
+            return employee;
+          } else if (field == params[key]) {
+            return employee;
+          }
+        } else return employees;
       }
       return null;
     });
@@ -167,6 +168,7 @@ export class EthereumApiProvider {
     if (!params) {
       return employees;
     }
+    // add attendee to local memory in array
     let that = this;
     let EvaluateInstance;
     this.EvaluationAttendeeContract.deployed().then(function (instance) {
@@ -177,6 +179,7 @@ export class EthereumApiProvider {
         })
     });
 
+    // add attendee to blocks
     new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
         instance.addAttendee(params.name, params.designation, params.image, params.address, {
@@ -188,17 +191,14 @@ export class EthereumApiProvider {
         console.log(error);
       });
     });
-
     return employees;
   }
 
   // async event to get attendance result of employee
   async getAttendanceReport(params?: any) {
-
     if (!params) {
       return "Nothing"
     }
-
     // evaluation process
     new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then((instance) => {
@@ -215,7 +215,6 @@ export class EthereumApiProvider {
         console.log(error);
       });
     });
-
     let evaluationInstance;
     return await new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then(function (instance) {
@@ -244,15 +243,15 @@ export class EthereumApiProvider {
   }
 
   // get complete attendance report
-  moreAttendanceResult(address) {
+  moreAttendanceResult(address,pagination_limit) {
     return new Observable((observer) => {
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < pagination_limit; i++) {
         observer.next(this.getResult(this.dateInSeconds() - (86400000 * i), address))
       }
     });
   }
 
-
+  // get result by date and address
   getResult(date, address) {
     return new Promise((resolve, reject) => {
       this.EvaluationAttendeeContract.deployed().then((instance) => {
@@ -267,22 +266,8 @@ export class EthereumApiProvider {
     });
   }
 
-  // change date
+  // get seconds from date
   dateInSeconds() {
-    /*   let date = new Date();
-       let formattedDate = ('0' + date.getDate()).slice(-2);
-       let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
-       let formattedYear = date.getFullYear().toString();
-       let dateString = formattedYear + '-' + formattedMonth + '-' + formattedDate;
-       let date_format = new Date(dateString);
-       let seconds = date_format.getTime() / 1000;
-       return seconds;*/
-
-
-    /* let date = new Date(); let seconds = date.getTime();
-     return seconds;*/
-
-
     let date = new Date();
     let formattedDate = ('0' + date.getDate()).slice(-2);
     let formattedMonth = ('0' + (date.getMonth() + 1)).slice(-2);
@@ -293,6 +278,7 @@ export class EthereumApiProvider {
     return seconds;
   }
 
+  // get date from seconds
   secondsInDate(seconds) {
     let date = new Date(seconds);
     let day = date.toDateString();

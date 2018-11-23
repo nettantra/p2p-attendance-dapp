@@ -18,6 +18,7 @@ import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 })
 export class EmployeeListPage {
   currentEmployees: any = [];
+
   constructor(public navCtrl: NavController, public navParams: NavParams, public eap: EthereumApiProvider) {
     this.currentEmployees = this.eap.getAllAttendee();
   }
@@ -33,12 +34,22 @@ export class EmployeeListPage {
 
   openEmployee(employee) {
     this.navCtrl.push('EmployeeDetailPage', {
-      employee:employee
+      employee: employee
     });
   }
 
-  deleteEmployee(){
+  deleteEmployee() {
 
+  }
+
+  searchEmployee(ev) {
+    if (ev.altKey == false) this.currentEmployees = this.eap.getAllAttendee(); else {
+      let val = ev.target.value;
+      if (!val || !val.trim()) this.currentEmployees = this.eap.getAllAttendee();
+      this.currentEmployees = this.eap.getAllAttendee({
+        name: val
+      })
+    }
   }
 
 }

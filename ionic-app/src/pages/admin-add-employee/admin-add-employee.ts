@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {IonicPage, NavController, NavParams, ViewController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 
 @IonicPage()
@@ -15,7 +15,7 @@ export class AdminAddEmployeePage {
   form: FormGroup;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
-              formBuilder: FormBuilder, public eap: EthereumApiProvider) {
+              formBuilder: FormBuilder, public eap: EthereumApiProvider, private toastCtrl: ToastController) {
 
     this.form = formBuilder.group({
       name: ['', Validators.required],
@@ -45,8 +45,20 @@ export class AdminAddEmployeePage {
     if (!this.form.valid) {
       return;
     }
-    this.eap.addNewEmployee(this.form.value);
-    this.viewCtrl.dismiss(this.form.value);
+    this.eap.authenticationUser(this.form.value.address).then((res) => {
+      // @ts-ignore
+      if (!res.result) {
+        this.eap.addNewEmployee(this.form.value);
+        this.viewCtrl.dismiss(this.form.value);
+      } else {
+        let toast = this.toastCtrl.create({
+          message: 'Address already have taken',
+          duration: 2000,
+          position: 'bottom'
+        });
+        toast.present();
+      }
+    });
   }
 
 }

@@ -1,78 +1,73 @@
 page-attendance {
+
+  // toolbar
   .toolbar-background {
     background: transparent;
     border-color: transparent;
   }
 
-  .slide-zoom {
-    height: 100%;
+  // toolbar buttons
+  .refresh_status ion-icon, .showDate, ion-spinner {
+    color: map_get($colors, dark);
   }
 
-  .slide-title {
-    margin-top: 2.8rem;
+  // for employee card
+  ion-card ion-label {
+    color: map_get($colors, dark);
+  }
+  .no_access {
+    padding: 10px;
+  }
+  img {
+    height: 260px !important;
+    width: 100%
+  }
+  .options div, .skipNextBtn {
+    color: map_get($colors, dark);
   }
 
-  .slide-image {
-    max-height: 40%;
-    max-width: 60%;
-    margin: 36px 0;
-  }
-
-  b {
-    font-weight: 500;
-  }
-
-  p {
-    padding: 0 40px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #60646B;
-
-    b {
-      color: #000000;
-    }
-  }
-
-  .action_button{
+  // action button color change
+  .action_button {
     color: #44404059;
     //color:  map_get($colors, title);
   }
-
-  .icon_status_p,.icon_status_a{
+  .icon_status_p, .icon_status_a {
     color: #465ee2cc;
   }
 
-
-
-
-
+  // for loader
   .loader {
     width: 40px;
     height: 40px;
-    background-color: #000;
-
+    background-color: map_get($colors, dark);
     margin: 100px auto;
     -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
     animation: sk-rotateplane 1.2s infinite ease-in-out;
   }
-
   @-webkit-keyframes sk-rotateplane {
-    0% { -webkit-transform: perspective(120px) }
-    50% { -webkit-transform: perspective(120px) rotateY(180deg) }
-    100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+    0% {
+      -webkit-transform: perspective(120px)
+    }
+    50% {
+      -webkit-transform: perspective(120px) rotateY(180deg)
+    }
+    100% {
+      -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg)
+    }
   }
-
   @keyframes sk-rotateplane {
     0% {
       transform: perspective(120px) rotateX(0deg) rotateY(0deg);
       -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
-    } 50% {
-        transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
-        -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
-      } 100% {
-          transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
-          -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
-        }
+    }
+    50% {
+      transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+      -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
+    }
+    100% {
+      transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+      -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    }
   }
 
 }

@@ -1,15 +1,29 @@
 <ion-header>
-
   <ion-navbar>
     <ion-title>{{employeeDetailsIndividual[2]}}</ion-title>
   </ion-navbar>
-
 </ion-header>
 
-
 <ion-content>
-
   <div *ngIf="total_report?.length > 0;">
+    <ion-item no-lines class="paginationList">
+      <ion-grid>
+        <ion-row>
+          <ion-col text-center>
+            <input type="radio" name="select_count" id="1" value="5"> 5
+          </ion-col>
+          <ion-col text-center>
+            <input type="radio" name="select_count" id="2" value="10"> 10
+          </ion-col>
+          <ion-col text-center>
+            <input type="radio" name="select_count" id="3" value="20"> 20
+          </ion-col>
+          <ion-col text-center>
+            <input type="radio" name="select_count" id="4" value="30"> 30
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
     <ion-card *ngFor="let r of total_report;let i = index"
               style="margin-top: 10px !important;background: #51aad0 !important;">
       <ion-card-header>{{total_days[i]}}</ion-card-header>
@@ -118,7 +132,6 @@
             </div>
           </ion-scroll>
         </ion-item>
-
       </ion-card-content>
     </ion-card>
   </div>

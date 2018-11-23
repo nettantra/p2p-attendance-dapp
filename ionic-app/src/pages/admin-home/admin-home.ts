@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {IonicPage, MenuController, NavController, NavParams} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 
 /**
@@ -16,8 +16,8 @@ import {Storage} from "@ionic/storage";
 })
 export class AdminHomePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public storage: Storage) {
-
+  constructor(public navCtrl: NavController, public navParams: NavParams, public storage: Storage, public menu: MenuController) {
+    this.menu.swipeEnable(false);
     /*storage.get('user_type').then((type) => {
       console.log(type);
       if (type != "admin") {

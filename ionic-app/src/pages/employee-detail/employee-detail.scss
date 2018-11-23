@@ -1,14 +1,45 @@
 page-employee-detail {
-  .item-profile {
+
+  // employee profile
+  .employee-profile {
     width: 100%;
     //background-position: center center;
     background-size: cover;
     height: 250px;
   }
 
-  .item-detail {
+  // for employee details
+  .employee-detail {
     width: 100%;
     background: white;
     position: absolute;
+  }
+
+  // for loader
+  .loader {
+    margin-top: 110px;
+  }
+  .loader ion-spinner {
+    color: map_get($colors, dark);
+  }
+
+  // for card
+  ion-card {
+    margin-top: 110px !important;
+  }
+  ion-card-header {
+    background: map_get($colors, light);
+    //c7c7c7ab
+  }
+  ion-card ion-icon {
+    color: map_get($colors, primary);
+  }
+
+  // for more result
+  .moreResult {
+    text-align: right;
+  }
+  .moreResult a {
+    font-size: 1.3rem
   }
 }

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
-import {Observable} from "rxjs";
+
 
 /**
  * Generated class for the CompleteAttendanceDetailsPage page.
@@ -21,6 +21,7 @@ export class CompleteAttendanceDetailsPage {
   report: string = "N/A";
   total_report: any = [];
   total_days: any = [];
+  limit:number = 5;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private eap: EthereumApiProvider) {
     this.employeeDetailsIndividual = navParams.get('employeeDetails');
@@ -28,8 +29,7 @@ export class CompleteAttendanceDetailsPage {
   }
 
   ionViewDidLoad() {
-
-    this.eap.moreAttendanceResult(this.employeeDetailsIndividual[1])
+    this.eap.moreAttendanceResult(this.employeeDetailsIndividual[1],this.limit)
       .subscribe(msg => {
           // @ts-ignore
           msg.then((r) => {

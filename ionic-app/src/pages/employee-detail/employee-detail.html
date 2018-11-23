@@ -7,28 +7,27 @@
 
 <ion-content>
 
-  <div class="item-profile" text-center #profilePic [style.background-image]="'url(' + employee[4] + ')'"></div>
-  <div class="item-detail" padding>
+  <div class="employee-profile" text-center #profilePic [style.background-image]="'url(' + employee[4] + ')'"></div>
+  <div class="employee-detail" padding>
     <h2>{{employee[2]}}</h2>
     <p>{{employee[3]}}</p>
   </div>
 
-
-  <ion-item *ngIf="showEmployeeReport == false" text-center style="margin-top: 110px !important;" no-lines>
-    <ion-spinner style="color: #000" name="ios-small"></ion-spinner>
+  <ion-item class="loader" *ngIf="showEmployeeReport == false" text-center no-lines>
+    <ion-spinner name="ios-small"></ion-spinner>
   </ion-item>
 
-  <ion-card style="margin-top: 110px !important;" *ngIf="showEmployeeReport == true">
-    <ion-card-header style="background: #c7c7c7ab !important;" [innerHTML]="todayDate"></ion-card-header>
+  <ion-card *ngIf="showEmployeeReport == true">
+    <ion-card-header [innerHTML]="todayDate"></ion-card-header>
     <ion-card-content>
       <ion-item>
-        <ion-icon name="thumbs-up" style="color: #d883e0 !important;" item-start></ion-icon>
+        <ion-icon name="thumbs-up" item-start></ion-icon>
         Attendance Report
         <ion-badge item-end [innerHTML]=attendanceReport></ion-badge>
       </ion-item>
 
-      <ion-item right no-padding style="text-align: right" no-margin>
-        <a (click)="moreResult()" style="font-size: 1.3rem">More Result</a>
+      <ion-item class="moreResult" right no-padding no-margin>
+        <a (click)="moreResult()">More Result</a>
       </ion-item>
     </ion-card-content>
   </ion-card>

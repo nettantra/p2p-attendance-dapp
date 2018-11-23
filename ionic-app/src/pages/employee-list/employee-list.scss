@@ -1,3 +1,25 @@
 page-employee-list {
 
+  .cssForRoundSLidingItems .button-inner{
+    background-color: #ffffff21;
+    border-radius: 50%;
+    height: 45px;
+    width: 45px;
+    color: white;
+    font-size: 11px;
+    margin-bottom: 7px;
+  }
+  .cssForRoundSLidingItems button{
+    background-color: map_get($colors, dark);
+    margin-left: -1px!important;
+  }
+
+  .cssForRoundSLidingItems,.cssForRoundSLidingItems ion-item{
+    height: 75px !important;
+  }
+  .cssForRoundSLidingItems  ion-icon:not(.nextDiff){
+    margin-top:7px !important;
+    font-size: 2.1em !important;
+  }
+
 }
