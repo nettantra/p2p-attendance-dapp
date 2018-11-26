@@ -21,14 +21,14 @@ contract Attendees {
     // constructor to save some attendees
     constructor() public {
         owner = msg.sender;
-        addAttendee("Devadutta Sahoo", "CEO/CTO", "https://img.theweek.in/content/dam/week/news/entertainment/images/2018/3/13/amitabh-bachchan-salil-bera.jpg", 0x9D5AeBBaf8026021ad33A27748ae7d5E94C7E891);
-        addAttendee("Swetansu Mohapatra", "Application Developer", "http://stat2.bollywoodhungama.in/wp-content/uploads/2017/05/Sanjay-Dutt-walks-out-of-Total-Dhamaal.jpg", 0xab70787066CDeEb7f402b7364fac3a8BD7851c8D);
-        addAttendee("Pitabas Behera", "Managing Director", "https://s3.india.com/wp-content/uploads/2017/06/Aamir-Khan.jpg", 0x54a51E5d44C35F8C175270d98fd633440f929D21);
-        addAttendee("Sanjeev Nanda", "Human Resources", "https://img.etimg.com/thumb/height-480,width-640,imgsize-9960,msid-56595593/.jpg", 0xfb98737a67F6f577f9b88F5496e95CB98601C3E7);
-        addAttendee("Prabina Parichha", "Application Trainee", "http://2.bp.blogspot.com/__5vnMiF3qLg/TO-0BpSXIhI/AAAAAAAAC-U/nHbC0PrtvHI/s1600/Genelia%252BDsouza%252Bcute.jpg", 0x45e059d59BcdD9011a1F23D7638272E855F578f6);
-        addAttendee("SmrutiRekha Panda", "Content Writer", "https://s3.india.com/wp-content/uploads/2017/08/ileana-d-cruz-6.png", 0x81185cd003EE10e8ed01C6a932a24CB191C5CAfd);
-        addAttendee("Sibabrat Swain", "Application Developer", "http://cdn.persiangig.com/preview/7tb5eZgr3W/large/6106.jpg", 0x92BF7faa7f3d76BCbd2d206f2AD9d928D0D60779);
-        addAttendee("Biswaindu Parida", "Content Writer", "https://cdn1.thr.com/sites/default/files/imagecache/scale_crop_768_433/2016/11/anil_kapoor_-_getty_-_h_-_2016.jpg", 0x3b220bdD0D1C1b37AC6d434f027CC88a5b51B878);
+        addAttendee("Devadutta Sahoo", "CEO/CTO", "https://img.theweek.in/content/dam/week/news/entertainment/images/2018/3/13/amitabh-bachchan-salil-bera.jpg", 0xE4b5d53BDe0Ea9948cCe22cA6411F70b28E38f41);
+        addAttendee("Swetansu Mohapatra", "Application Developer", "http://stat2.bollywoodhungama.in/wp-content/uploads/2017/05/Sanjay-Dutt-walks-out-of-Total-Dhamaal.jpg", 0xaaaBe0cf13cd5A722561c293602851714D2e593d);
+        addAttendee("Pitabas Behera", "Managing Director", "https://s3.india.com/wp-content/uploads/2017/06/Aamir-Khan.jpg", 0x3590415CD6596Da5015CD2810e5F5Ac04E6D7A77);
+        addAttendee("Sanjeev Nanda", "Human Resources", "https://img.etimg.com/thumb/height-480,width-640,imgsize-9960,msid-56595593/.jpg", 0x79e32f46b4C1fC8EDE6465Bd17E2D64CE4a2A41b);
+        addAttendee("Prabina Parichha", "Application Trainee", "http://2.bp.blogspot.com/__5vnMiF3qLg/TO-0BpSXIhI/AAAAAAAAC-U/nHbC0PrtvHI/s1600/Genelia%252BDsouza%252Bcute.jpg", 0x1CC4ffc74a149b6aACA316e80235f7D62f161b20);
+        addAttendee("SmrutiRekha Panda", "Content Writer", "https://s3.india.com/wp-content/uploads/2017/08/ileana-d-cruz-6.png", 0x1AaED6720B2e7Cb215b8b22870153C53EACf4A85);
+        addAttendee("Sibabrat Swain", "Application Developer", "http://cdn.persiangig.com/preview/7tb5eZgr3W/large/6106.jpg", 0x669D42d970F7ab357fEe9615283ef34FaFAd9f14);
+        addAttendee("Biswaindu Parida", "Content Writer", "https://cdn1.thr.com/sites/default/files/imagecache/scale_crop_768_433/2016/11/anil_kapoor_-_getty_-_h_-_2016.jpg", 0x97E290c59bc4EB459e4911c0e56ba8ef668F8FF9);
     }
 
     // modifier to add the attendee by owner only
@@ -50,6 +50,16 @@ contract Attendees {
         }
         return false;
     }
+
+    // for updating attendee
+    function updateAttendee(address _user_add, string _name, string _about, string _image) public {
+        for (uint i = 1; i <= attendeesCount; i++) {
+            if (attendees[i].public_key == _user_add) {
+                attendees[i] = AttendeesStructure(i, _user_add, _name, _about, _image);
+            }
+        }
+    }
+
 
 }
 
@@ -106,6 +116,15 @@ contract MarkAttendance is Attendees {
         return (attendee_add, opinion, _date);
     }
 
+    // validate marking attendance
+    function validateAttendance(address _attendee, uint256 _date) public view returns (bool){
+        for (uint i = 1; i <= attendeeDetailsCount; i++) {
+            if (attendeeDetails[i].attendance_giver == msg.sender && attendeeDetails[i].attendee == _attendee && attendeeDetails[i].date_of_attendance == _date) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 contract EvaluateAttendance is MarkAttendance {
@@ -144,12 +163,12 @@ contract EvaluateAttendance is MarkAttendance {
     }
 
     // for getting attendance result as per date and address
-    function attendanceResult(uint256 _date, address _addr) public  view returns (uint) {
+    function attendanceResult(uint256 _date, address _addr) public view returns (uint) {
         uint present = 0;
         uint absent = 0;
         uint opinion = 3;
         for (uint i = 1; i <= attendeeDetailsCount; i++) {
-            if (_addr == attendeeDetails[i].attendee && attendeeDetails[i].date_of_attendance  == _date)
+            if (_addr == attendeeDetails[i].attendee && attendeeDetails[i].date_of_attendance == _date)
             {
                 if (attendeeDetails[i].attendance_opinion == 1) present++;
                 else if (attendeeDetails[i].attendance_opinion == 2) absent++;
