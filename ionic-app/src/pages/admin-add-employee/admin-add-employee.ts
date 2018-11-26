@@ -11,7 +11,6 @@ import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 export class AdminAddEmployeePage {
 
   isReadyToSave: boolean;
-
   form: FormGroup;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,

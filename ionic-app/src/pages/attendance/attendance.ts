@@ -62,7 +62,7 @@ export class AttendancePage {
     setTimeout(() => {
       this.spinner = false;
       this.storage.get('attendance_date').then((prev_date) => {
-        console.log(prev_date,this.eap.dateInSeconds());
+        // console.log(prev_date, this.eap.dateInSeconds());
         if (prev_date != this.eap.dateInSeconds()) {
           this.side_status = true;
           this.storageForValidation = [];
@@ -179,7 +179,10 @@ export class AttendancePage {
         }
         this.storageForValidation.push(that.attendeeAddress);
         this.storage.set('attendee_address', this.storageForValidation);
-        this.eap.markAttendance(that.attendeeAddress, opinion, date, this.attendanceMarker);
+        this.eap.markAttendance(that.attendeeAddress, opinion, date, this.attendanceMarker)
+          .then((res) => {
+            // console.log(res);
+          })
         setTimeout(() => this.showSlideSkip(), 2000);
       } else {
         let toast = this.toastCtrl.create({message: 'You can not do this', duration: 1200, position: 'bottom'});
@@ -213,7 +216,7 @@ export class AttendancePage {
     this.storage.remove('auth_key').then(() => {
       this.navCtrl.setRoot('WelcomePage');
     }).catch(function (error) {
-      console.log(error);
+      // console.log(error);
     })
   }
 }

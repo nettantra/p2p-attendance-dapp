@@ -27,6 +27,7 @@ export class MyApp {
     {title: 'Admin Dashboard', component: 'AdminHomePage'},
     {title: 'Employee', component: 'EmployeeListPage'},
     {title: 'Admin Add Employee', component: 'AdminAddEmployeePage'},
+    {title: 'Edit Employee', component: 'AdminEditEmployeePage'},
     {title: 'Admin Check Result', component: 'AdminCheckResultPage'},
     {title: 'About Employee', component: 'EmployeeDetailPage'},
     {title: 'Complete Details', component: 'CompleteAttendanceDetailsPage'}

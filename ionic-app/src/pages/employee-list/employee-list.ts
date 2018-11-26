@@ -27,11 +27,12 @@ export class EmployeeListPage {
 
   }
 
-
+  // add a new employee
   addEmployee() {
     this.navCtrl.push('AdminAddEmployeePage');
   }
 
+  // open employee details
   openEmployee(employee) {
     this.navCtrl.push('EmployeeDetailPage', {
       employee: employee
@@ -42,6 +43,7 @@ export class EmployeeListPage {
 
   }
 
+  // search employee
   searchEmployee(ev) {
     if (ev.altKey == false) this.currentEmployees = this.eap.getAllAttendee(); else {
       let val = ev.target.value;
@@ -50,6 +52,13 @@ export class EmployeeListPage {
         name: val
       })
     }
+  }
+
+  // edit employee
+  editEmployee(count) {
+    this.navCtrl.push('AdminEditEmployeePage', {
+      employee: this.currentEmployees[count]
+    });
   }
 
 }

@@ -47,4 +47,9 @@ page-complete-attendance-details {
     background: map_get($additional, completeNes);
   }
 
+  ion-card {
+    margin-top: 10px !important;
+    background: #51aad0 !important;
+  }
+
 }
