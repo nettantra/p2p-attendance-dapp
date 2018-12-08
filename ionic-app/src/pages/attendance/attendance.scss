@@ -28,11 +28,12 @@ page-attendance {
 
   // action button color change
   .action_button {
-    color: #44404059;
+    //color: #44404059;
+    color: rgb(162, 162, 165);
     //color:  map_get($colors, title);
   }
   .icon_status_p, .icon_status_a {
-    color: #465ee2cc;
+    color: rgba(70, 94, 226, 0.8);
   }
 
   // for loader

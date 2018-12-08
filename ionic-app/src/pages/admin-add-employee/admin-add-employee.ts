@@ -39,7 +39,6 @@ export class AdminAddEmployeePage {
 
   }
 
-
   saveEmployee() {
     if (!this.form.valid) {
       return;
@@ -47,7 +46,13 @@ export class AdminAddEmployeePage {
     this.eap.authenticationUser(this.form.value.address).then((res) => {
       // @ts-ignore
       if (!res.result) {
-        this.eap.addNewEmployee(this.form.value);
+        this.eap.addNewEmployee(this.form.value).then((res)=>{
+          // @ts-ignore
+          if(res.serializedTx) {
+            // @ts-ignore
+            this.eap.sendRawTransactions(res.serializedTx);
+          }
+        }).catch((err)=>console.log(err));
         this.viewCtrl.dismiss(this.form.value);
       } else {
         let toast = this.toastCtrl.create({

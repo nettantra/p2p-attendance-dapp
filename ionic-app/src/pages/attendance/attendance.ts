@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {Nav, IonicPage, MenuController, NavController, ToastController} from 'ionic-angular';
+import {Nav, IonicPage, MenuController, NavController, ToastController, NavParams} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 
@@ -8,10 +8,11 @@ import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
   selector: 'page-attendance',
   templateUrl: 'attendance.html'
 })
+
 export class AttendancePage {
   @ViewChild(Nav) nav: Nav;
   side_status: boolean = false;
-  spinner: boolean = true;
+
   attendee_name: string = "";
   attendee_about: string = "";
   attendee_img: string = "";
@@ -20,15 +21,11 @@ export class AttendancePage {
   todayDate: string = "";
   slide_num: number = 1;
   attendeesCount: number = 1;
-  lastPageStatus: boolean = false;
-  fromAccount: string = "";
   icon_status_p: boolean = false;
   icon_status_a: boolean = false;
   storageForValidation: any = [];
-  no_access: boolean = false;
   refreshBtn: boolean = true;
   refreshLoader: boolean = false;
-  button_name: string = "SKIP";
   attendanceMarker: string = "";
 
   // for page count
@@ -42,7 +39,18 @@ export class AttendancePage {
   random_num: 0;
   max_attendee: number = 5;
 
-  constructor(public navCtrl: NavController, public menu: MenuController, private toastCtrl: ToastController, public storage: Storage, private eap: EthereumApiProvider) {
+
+  // start from  here
+  spinner: boolean = false;
+  no_access: boolean = false;
+
+
+  constructor(public navParams: NavParams, public navCtrl: NavController, public menu: MenuController,
+              private toastCtrl: ToastController,
+              public storage: Storage, private eap: EthereumApiProvider) {
+    this.menu.swipeEnable(false);
+
+    this.findDate();
     this.storage.get('auth_key').then((key) => {
       if (!key) {
         storage.remove('auth_key');
@@ -50,119 +58,96 @@ export class AttendancePage {
       }
       this.attendanceMarker = key;
     });
-    this.accountInfo();
-    this.eap.getTotalNumberAttendee().then((total_attendee) => {
-      // @ts-ignore
-      this.total_attendee_count = total_attendee.result;
-      for (let i = 1; i <= this.total_attendee_count; i++) {
-        this.possible_attendee_num.push(i);
-      }
-    });
-    this.findDate();
+  }
+
+  ionViewDidLoad() {
+    this.spinner = true;
     setTimeout(() => {
-      this.spinner = false;
+      this.eap.getTotalNumberAttendee(this.attendanceMarker).then((total_attendee) => {
+        // @ts-ignore
+        if (total_attendee.status == 400) this.logoutUser();
+        this.total_attendee_count = total_attendee.result;
+        if (this.total_attendee_count < 5) this.max_page_count = this.total_attendee_count;
+        for (let i = 0; i < this.total_attendee_count; i++) {
+          this.possible_attendee_num.push(i);
+        }
+      });
+
       this.storage.get('attendance_date').then((prev_date) => {
-        // console.log(prev_date, this.eap.dateInSeconds());
         if (prev_date != this.eap.dateInSeconds()) {
-          this.side_status = true;
           this.storageForValidation = [];
           this.storage.set('attendee_address', this.storageForValidation);
+          return this.attendeeLoad();
         } else {
+          this.spinner = false;
           this.no_access = true;
         }
       });
-      this.attendeeLoad();
     }, 2000);
-    this.menu.swipeEnable(false);
-  }
-
-  //get account info
-  accountInfo() {
-    this.eap.getBlockInfo()
-      .then(value => {
-        // @ts-ignore
-        this.fromAccount = value.fromAccount;
-      }).catch(function (error) {
-
-    });
   }
 
   // attendeeLoad
   attendeeLoad(slide_num = 1) {
-    this.random_num = this.possible_attendee_num[Math.floor(Math.random() * this.possible_attendee_num.length)];
-    let index = this.possible_attendee_num.indexOf(this.random_num);
-    if (index !== -1) this.possible_attendee_num.splice(index, 1);
-    this.eap.talkToContract(slide_num, this.random_num, this.max_attendee)
-      .then(value => {
-        // @ts-ignore
-        if (value.status == 200) {
+    if (this.max_page_count >= this.slide_num) {
+      this.random_num = this.possible_attendee_num[Math.floor(Math.random() * this.possible_attendee_num.length)];
+      this.eap.talkToContract(slide_num, this.random_num)
+        .then(value => {
+          this.spinner = false;
+          this.side_status = true;
           // @ts-ignore
           let slidedata = value.attendee_details;
           // @ts-ignore
           this.attendeesCount = value.total_attendee_count;
-          this.slide_num++;
-          if (slidedata[1].toLowerCase() != this.attendanceMarker.toLowerCase()) {
-            this.page_count++;
-            this.page_count_show = "(" + this.page_count + "/" + this.max_page_count + ")"
-            this.attendeeId = (slidedata[0]);
-            this.attendeeAddress = (slidedata[1]);
-            this.attendee_name = (slidedata[2]);
-            this.attendee_about = (slidedata[3]);
-            this.attendee_img = (slidedata[4]);
-          } else {
-            this.max_attendee = 6;
-            let index = this.possible_attendee_num.indexOf(this.slide_num);
-            if (index !== -1) this.possible_attendee_num.splice(index, 1);
-            this.attendeeLoad(this.slide_num);
-          }
-        } else {
-          this.refreshAttendee();
-        }
+          this.attendeeId = (slidedata[0]);
+          this.attendeeAddress = (slidedata[1]);
+          this.attendee_name = (slidedata[2]);
+          this.attendee_about = (slidedata[3]);
+          this.attendee_img = (slidedata[4]);
 
-      }).catch(function (error) {
-    });
+          this.slide_num++;
+          this.page_count++;
+          this.page_count_show = "(" + this.page_count + "/" + this.max_page_count + ")"
+          let index = this.possible_attendee_num.indexOf(this.random_num);
+          if (index !== -1) this.possible_attendee_num.splice(index, 1);
+
+        }).catch(function (error) {
+      });
+    } else {
+      this.side_status = false;
+      this.no_access = true;
+      this.storage.set('attendance_date', this.eap.dateInSeconds());
+    }
   }
 
   // load next attendee randomly
   showSlideSkip() {
     this.icon_status_a = false;
     this.icon_status_p = false;
-    if (this.slide_num - this.attendeesCount == 1) this.lastPageStatus = true;
-    if (!this.lastPageStatus) {
-      this.spinner = true;
-      this.side_status = false;
-      this.attendeeLoad(this.slide_num);
-    } else {
-      let toast = this.toastCtrl.create({
-        message: 'No more attendees',
-        duration: 2000,
-        position: 'bottom'
-      });
-      toast.present();
-      this.refreshAttendee();
-    }
+    this.spinner = true;
+    this.side_status = false;
+
     setTimeout(() => {
       this.spinner = false;
-      this.button_name = "SKIP";
       this.side_status = true;
-    }, 3000);
+      this.attendeeLoad(this.slide_num);
+    }, 10000);
+
+
   }
 
   // mark attendance and save opinion
   markAttendance(opinion = 0) {
-    this.button_name = "NEXT";
     this.storage.set('attendance_date', this.eap.dateInSeconds());
     let that = this;
     if (!opinion) return false;
     let date = this.eap.dateInSeconds();
-
     this.storage.get('attendee_address').then((attendees) => {
       let status = attendees.includes(that.attendeeAddress);
       if (!status) {
         if (opinion == 1) {
           let toast = this.toastCtrl.create({
             message: 'You have registered present ',
-            duration: 1900,
+            duration: 10000,
             position: 'bottom'
           });
           toast.present();
@@ -171,7 +156,7 @@ export class AttendancePage {
         else {
           let toast = this.toastCtrl.create({
             message: 'You have registered absent',
-            duration: 1900,
+            duration: 10000,
             position: 'bottom'
           });
           toast.present();
@@ -181,16 +166,16 @@ export class AttendancePage {
         this.storage.set('attendee_address', this.storageForValidation);
         this.eap.markAttendance(that.attendeeAddress, opinion, date, this.attendanceMarker)
           .then((res) => {
-            // console.log(res);
-          })
-        setTimeout(() => this.showSlideSkip(), 2000);
+            this.eap.sendRawTransactions(res);
+          }).catch(function (error) {
+          console.log(error);
+        })
+        setTimeout(() => this.showSlideSkip(), 10000);
       } else {
         let toast = this.toastCtrl.create({message: 'You can not do this', duration: 1200, position: 'bottom'});
         toast.present();
       }
     });
-
-
   }
 
   // refresh attendee

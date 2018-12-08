@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 
 
@@ -19,7 +19,7 @@ import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 export class EmployeeListPage {
   currentEmployees: any = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public eap: EthereumApiProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public eap: EthereumApiProvider, private alertCtrl: AlertController) {
     this.currentEmployees = this.eap.getAllAttendee();
   }
 
@@ -39,10 +39,6 @@ export class EmployeeListPage {
     });
   }
 
-  deleteEmployee() {
-
-  }
-
   // search employee
   searchEmployee(ev) {
     if (ev.altKey == false) this.currentEmployees = this.eap.getAllAttendee(); else {
@@ -59,6 +55,31 @@ export class EmployeeListPage {
     this.navCtrl.push('AdminEditEmployeePage', {
       employee: this.currentEmployees[count]
     });
+  }
+
+  // delete and employee
+  deleteEmployee(count) {
+    let alert = this.alertCtrl.create({
+      title: 'Confirm Delete',
+      message: 'Do you want to delete ' + this.currentEmployees[count][2] + " ?",
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => {
+          }
+        },
+        {
+          text: 'Delete',
+          handler: () => {
+            this.eap.deleteEmployee(count,this.currentEmployees[count][1],2).then((res)=>{
+              if(res) this.eap.sendRawTransactions(res);
+            })
+          }
+        }
+      ]
+    });
+    alert.present();
   }
 
 }

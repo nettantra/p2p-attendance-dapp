@@ -48,7 +48,7 @@ export class MyApp {
     });
 
     platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      this.statusBar.backgroundColorByName('black');
       this.splashScreen.hide();
     });
   }

@@ -31,9 +31,9 @@ export class WelcomePage {
               private alertCtrl: AlertController, public toastCtrl: ToastController, private eap: EthereumApiProvider,
               public storage: Storage) {
 
-    // storage.remove('auth_key');
-    // storage.remove('user_type');
-    // storage.remove('attendance_date');
+    storage.remove('auth_key');
+    storage.remove('user_type');
+    storage.remove('attendance_date');
     this.menu.swipeEnable(false);
 
     this.myStyle = {
@@ -82,7 +82,8 @@ export class WelcomePage {
       .then((value) => {
         // @ts-ignore
         this.owner_address = value.fromAccount;
-      });
+      }).catch(function (error) {
+    });
   }
 
   login() {
@@ -126,17 +127,22 @@ export class WelcomePage {
 
   // authenticate user method
   authentication(user_add) {
+
+    this.owner_address = '0x25bA673A96acadD7A02f4c5834Ba80C1AF6b7758'
     if (user_add.toLowerCase() == this.owner_address.toLowerCase()) {
-      this.storage.set('user_type', "admin").then((value:any)=>{
+      this.storage.set('user_type', "admin").then((value: any) => {
         return this.navCtrl.setRoot('AdminHomePage');
       });
     } else {
       this.eap.authenticationUser(user_add).then((data) => {
         // @ts-ignore
         if (data.status == 200) {
+          this.eap.getBlockInfo();
           this.storage.set('auth_key', user_add);
           this.storage.set('user_type', "user");
-          this.navCtrl.setRoot('AttendancePage');
+          this.navCtrl.setRoot('AttendancePage', {
+            user_add: user_add
+          });
         } else {
           // @ts-ignore
           let toast_error = this.toastCtrl.create({message: data.msg, duration: 2000, position: 'bottom'});

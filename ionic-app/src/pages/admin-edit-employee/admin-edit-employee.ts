@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, ViewController} from 'ionic-angular';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
@@ -33,7 +33,7 @@ export class AdminEditEmployeePage {
 
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
-              formBuilder: FormBuilder, public eap: EthereumApiProvider, private toastCtrl: ToastController) {
+              formBuilder: FormBuilder, public eap: EthereumApiProvider) {
     this.employee_details = navParams.get('employee');
     this.employee.name = this.employee_details[2];
     this.employee.about = this.employee_details[3];
@@ -64,7 +64,11 @@ export class AdminEditEmployeePage {
   editEmployee() {
     this.eap.editEmployee(this.form.value)
       .then((res) => {
-        // console.log(res);
+       // @ts-ignore
+        if(res.serializedTx) {
+         // @ts-ignore
+         this.eap.sendRawTransactions(res.serializedTx);
+       }
       }).catch((error) => {
       // console.log(error);
     })
