@@ -154,8 +154,9 @@ export class EthereumApiProvider {
 
   // for mark attendance
   async markAttendance(attendeeAddress, opinion, date, fromAccount) {
+
     let pvt_key = this.account_details.find(item => item.public_address === fromAccount).private_key;
-    if (!pvt_key && !attendeeAddress && !opinion && !date && !fromAccount) {
+    if (!pvt_key || !attendeeAddress || !opinion || !date || !fromAccount) {
       return await new Promise((resolve, reject) => {
         return resolve(false);
       });
@@ -189,7 +190,7 @@ export class EthereumApiProvider {
                 'gasPrice': gasPrice,
                 'gasLimit': gasLimitHex,
                 'from': account,
-                'to': this.to_contract_address, //0x10847e8e0c704e610e5ae6971990c26a01d55cac
+                'to': that.to_contract_address, //0x10847e8e0c704e610e5ae6971990c26a01d55cac
                 'data': data,
                 // 'value': window.web3_.toHex(window.web3_.toWei("0.5", "ether")),
               }
