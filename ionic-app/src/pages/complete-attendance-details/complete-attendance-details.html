@@ -5,11 +5,12 @@
 </ion-header>
 
 <ion-content>
+
   <ion-item no-lines class="paginationList">
     <ion-grid>
       <ion-row>
         <ion-col text-center>
-          <input type="radio" name="select_count" id="1" value="5" (click)="radioBtn(5)"> 5
+          <input type="radio" name="select_count" id="1" value="5" checked (click)="radioBtn(5)"> 5
         </ion-col>
         <ion-col text-center>
           <input type="radio" name="select_count" id="2" value="10" (click)="radioBtn(10)"> 10
@@ -23,29 +24,36 @@
       </ion-row>
     </ion-grid>
   </ion-item>
+
+
   <div *ngIf="total_report?.length > 0;">
     <ion-card *ngFor="let r of total_report;let i = index">
       <ion-card-header>{{total_days[i]}}</ion-card-header>
+
+
       <ion-card-content>
+
         <ion-item>
           <h2> Final Report</h2>
           <ion-badge item-end>{{r}}</ion-badge>
         </ion-item>
+
         <ion-item no-lines>
           <div class="row">
             <div class="col col-50">
               <h2>Marked Present By</h2>
             </div>
-            <div class="col col-50" (click)="markedAttendanceReport(1,total_days_raw[i])">
+            <div class="col col-50" (click)="markedAttendanceReport(1,total_days_raw[i],i)">
               <ion-buttons right>
                 <ion-icon name="{{ionIconPresentValue}}"></ion-icon>
               </ion-buttons>
             </div>
           </div>
-          <ion-item class="loader" *ngIf="loader_p" text-center no-lines>
+          <ion-item class="loader"   *ngIf=" i == loaderPresent"  text-center no-lines>
             <ion-spinner name="ios-small"></ion-spinner>
           </ion-item>
-          <ion-scroll class="trending1-story" *ngIf="presentBy" scrollX="true">
+
+          <ion-scroll class="trending1-story" *ngIf=" i == dynamicIndexPresent" scrollX="true">
             <div class="trending1-story_scroll" *ngFor="let employeePresent of markedByPresentBy,let i_p = index">
               <div class="trending1-story_img_bg">
                 <img no-margin no-padding class="trending1-story_img"
@@ -55,24 +63,28 @@
                 <p no-margin no-padding text-center class="trending1-story_text_1">{{employeePresent.name}}</p>
               </div>
             </div>
+
           </ion-scroll>
+
         </ion-item>
+
+
         <ion-item no-lines>
           <div class="row">
             <div class="col col-50">
               <h2>Marked Absent By</h2>
             </div>
-            <div class="col col-50" (click)="markedAttendanceReport(2,total_days_raw[i])">
+            <div class="col col-50" (click)="markedAttendanceReport(2,total_days_raw[i],i)">
               <ion-buttons right>
                 <ion-icon name="{{ionIconAbsentValue}}"></ion-icon>
                 <!--<a color="primary" right>5</a>-->
               </ion-buttons>
             </div>
           </div>
-          <ion-item class="loader" *ngIf="loader_a" text-center no-lines>
+          <ion-item class="loader"  *ngIf=" i == loaderAbsent" text-center no-lines>
             <ion-spinner name="ios-small"></ion-spinner>
           </ion-item>
-          <ion-scroll class="trending1-story" *ngIf="absentBy" scrollX="true">
+          <ion-scroll class="trending1-story" *ngIf=" i== dynamicIndexAbsent"  scrollX="true">
             <div class="trending1-story_scroll" *ngFor="let employeeAbsent of markedByAbsenttBy,let i_a = index">
               <div class="trending1-story_img_bg">
                 <img no-margin no-padding class="trending1-story_img"
@@ -82,12 +94,22 @@
                 <p no-margin no-padding text-center class="trending1-story_text_1">{{employeeAbsent.name}}</p>
               </div>
             </div>
+
           </ion-scroll>
         </ion-item>
+
+
       </ion-card-content>
+
+
+
     </ion-card>
   </div>
+
+
   <ion-item *ngIf="total_report?.length == 0;" no-lines padding="10px">
     <h2>No Report Yet</h2>
   </ion-item>
+
+
 </ion-content>

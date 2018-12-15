@@ -19,36 +19,64 @@
 
 <ion-content lass="card-background-page">
 
-  <ion-card *ngIf="side_status">
-    <ion-item>
-      <ion-label text-left [innerHTML]="attendee_name"></ion-label>
-      <ion-label text-right [innerHTML]="page_count_show"></ion-label>
-    </ion-item>
-    <img [src]="attendee_img">
-    <ion-row class="options">
-      <ion-col>
-        <button ion-button icon-start clear small (click)="markAttendance(1)">
-          <ion-icon name="thumbs-up" class="action_button" [class.icon_status_p]="icon_status_p"></ion-icon>
-          <div>Present</div>
-        </button>
-      </ion-col>
-      <ion-col>
-        <button ion-button icon-start clear small (click)="markAttendance(2)">
-          <ion-icon name="thumbs-down" class="action_button" [class.icon_status_a]="icon_status_a"></ion-icon>
-          <div>Absent</div>
-        </button>
-      </ion-col>
-      <ion-col center text-center>
-        <button ion-button icon-start clear small (click)="showSlideSkip()">
-          <ion-icon class="skipNextBtn" name="arrow-forward"></ion-icon>
-          <div>SKIP</div>
-        </button>
-      </ion-col>
-    </ion-row>
-  </ion-card>
-  <ion-card *ngIf="no_access">
-    <ion-label text-center="" class="no_access">No access for today, please try tomorrow.</ion-label>
-    <img src="https://img.freepik.com/free-vector/thank-you-background_23-2147646155.jpg">
-  </ion-card>
-  <div *ngIf="spinner" class="loader"></div>
+  <!--<countdown [config]="{leftTime: 30}"></countdown>-->
+
+  <div class="mappingCenter">
+
+    <ion-card *ngIf="side_status">
+
+      <ion-grid style="background: #e4e4e4cf" no-border no-lines>
+        <ion-row>
+          <ion-col>
+            <ion-label text-left>Timer</ion-label>
+          </ion-col>
+
+          <ion-col></ion-col>
+          <ion-col>
+            <ion-label text-end style="color: red">
+              <countdown [config]="{leftTime:time_left}" (finished)="onFinished()">$!m!:$!s!</countdown>
+            </ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-grid style="background: #e4e4e4cf" no-lines="" no-border="">
+        <ion-row>
+          <ion-col>
+            <ion-label text-left [innerHTML]="attendee_name"></ion-label>
+          </ion-col>
+          <ion-col>
+            <ion-label text-right [innerHTML]="page_count_show"></ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <img [src]="attendee_img">
+
+      <ion-row class="options">
+        <ion-col>
+          <button ion-button icon-start clear small (click)="markAttendance(1)">
+            <ion-icon name="thumbs-up" class="action_button" [class.icon_status_p]="icon_status_p"></ion-icon>
+            <div>Present</div>
+          </button>
+        </ion-col>
+        <ion-col>
+          <button ion-button icon-start clear small (click)="markAttendance(2)">
+            <ion-icon name="thumbs-down" class="action_button" [class.icon_status_a]="icon_status_a"></ion-icon>
+            <div>Absent</div>
+          </button>
+        </ion-col>
+        <ion-col center text-center>
+          <button ion-button icon-start clear small (click)="onlySkip()">
+            <ion-icon class="skipNextBtn" name="arrow-forward"></ion-icon>
+            <div>SKIP</div>
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+    <ion-card *ngIf="no_access">
+      <ion-label text-center="" class="no_access">No access for today, please try tomorrow.</ion-label>
+      <img src="https://img.freepik.com/free-vector/thank-you-background_23-2147646155.jpg">
+    </ion-card>
+    <div *ngIf="spinner" class="loader"></div>
+  </div>
+
 </ion-content>

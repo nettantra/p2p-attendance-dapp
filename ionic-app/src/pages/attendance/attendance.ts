@@ -2,6 +2,7 @@ import {Component, ViewChild} from '@angular/core';
 import {Nav, IonicPage, MenuController, NavController, ToastController, NavParams} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
+import {CountdownComponent, CountdownModule} from 'ngx-countdown';
 
 @IonicPage()
 @Component({
@@ -10,7 +11,9 @@ import {EthereumApiProvider} from "../../providers/ethereum-api/ethereum-api";
 })
 
 export class AttendancePage {
+
   @ViewChild(Nav) nav: Nav;
+  @ViewChild(CountdownComponent) counter: CountdownComponent;
   side_status: boolean = false;
 
   attendee_name: string = "";
@@ -37,13 +40,11 @@ export class AttendancePage {
   possible_attendee_num: any = [];
   total_attendee_count: number = 0;
   random_num: 0;
-  max_attendee: number = 5;
-
 
   // start from  here
   spinner: boolean = false;
   no_access: boolean = false;
-
+  time_left:number = 10;
 
   constructor(public navParams: NavParams, public navCtrl: NavController, public menu: MenuController,
               private toastCtrl: ToastController,
@@ -58,6 +59,8 @@ export class AttendancePage {
       }
       this.attendanceMarker = key;
     });
+
+
   }
 
   ionViewDidLoad() {
@@ -130,10 +133,26 @@ export class AttendancePage {
       this.spinner = false;
       this.side_status = true;
       this.attendeeLoad(this.slide_num);
-    }, 10000);
-
-
+      this.time_left= 10;
+    }, 60000);
   }
+
+
+  onlySkip() {
+    this.icon_status_a = false;
+    this.icon_status_p = false;
+    this.spinner = true;
+    this.side_status = false;
+
+    setTimeout(() => {
+      this.spinner = false;
+      this.side_status = true;
+      this.attendeeLoad(this.slide_num);
+      this.time_left= 10;
+    }, 2000);
+  }
+
+
 
   // mark attendance and save opinion
   markAttendance(opinion = 0) {
@@ -145,22 +164,22 @@ export class AttendancePage {
       let status = attendees.includes(that.attendeeAddress);
       if (!status) {
         if (opinion == 1) {
+          this.icon_status_p = true;
           let toast = this.toastCtrl.create({
             message: 'You have registered present ',
-            duration: 10000,
+            duration: 3000,
             position: 'bottom'
           });
           toast.present();
-          this.icon_status_p = true;
-        }
-        else {
+
+        } else {
+          this.icon_status_a = true;
           let toast = this.toastCtrl.create({
             message: 'You have registered absent',
-            duration: 10000,
+            duration: 3000,
             position: 'bottom'
           });
           toast.present();
-          this.icon_status_a = true;
         }
         this.storageForValidation.push(that.attendeeAddress);
         this.storage.set('attendee_address', this.storageForValidation);
@@ -170,9 +189,9 @@ export class AttendancePage {
           }).catch(function (error) {
           console.log(error);
         })
-        setTimeout(() => this.showSlideSkip(), 10000);
+        setTimeout(() => this.showSlideSkip(), 3000);
       } else {
-        let toast = this.toastCtrl.create({message: 'You can not do this', duration: 1200, position: 'bottom'});
+        let toast = this.toastCtrl.create({message: 'You can not do this', duration: 2000, position: 'bottom'});
         toast.present();
       }
     });
@@ -204,4 +223,11 @@ export class AttendancePage {
       // console.log(error);
     })
   }
+
+  // show timer
+  onFinished(){
+    console.log("finished");
+    this.onlySkip();
+  }
+
 }

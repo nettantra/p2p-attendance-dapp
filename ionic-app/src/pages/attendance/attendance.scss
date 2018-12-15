@@ -71,4 +71,34 @@ page-attendance {
     }
   }
 
+  .mappingCenter {
+    left: 0% !important;
+    display: block !important;
+    right: 50%;
+    top: 0%;
+    bottom: 50%;
+    position: -webkit-sticky;
+    position: relative;
+  }
+
+  @media (min-width: 650px) {
+
+    .mappingCenter {
+      width: 40%;
+      left: 30% !important;
+      display: block !important;
+      right: 50%;
+      top: 0%;
+      bottom: 50%;
+      position: -webkit-sticky;
+      position: relative;
+
+    }
+    .change_language_icon {
+      font-size: 2.2vw !important;
+    }
+  }
+
 }
+
+
