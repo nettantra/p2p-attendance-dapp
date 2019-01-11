@@ -14,7 +14,7 @@ module.exports = {
                     `http://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`
                 )
             },
-            gasPrice: 2500000000,
+            gasPrice: 25000000000,
             network_id: "3",
             port: 8545
         },
