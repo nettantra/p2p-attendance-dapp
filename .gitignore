@@ -70,3 +70,5 @@ typings/
 .ionic-app/www/
 .ionic-app/platforms/
 .ionic-app/plugins/
+package-lock.json
+
