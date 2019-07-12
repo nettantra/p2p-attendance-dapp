@@ -73,3 +73,5 @@ typings/
 
 #remove from main app
 package-lock.json
+
+*.package-lock.json
