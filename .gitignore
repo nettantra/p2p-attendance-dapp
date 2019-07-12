@@ -70,5 +70,6 @@ typings/
 .ionic-app/www/
 .ionic-app/platforms/
 .ionic-app/plugins/
-package-lock.json
 
+#remove from main app
+package-lock.json
